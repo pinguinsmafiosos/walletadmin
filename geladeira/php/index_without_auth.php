@@ -14,13 +14,14 @@
     if (!isset($_SESSION)) {
         session_start();
     }
+    include 'verifica_login.php';
     ?>
     <header class="menu-principal">
         <div class="session">
             <span> Olá, <?php echo $_SESSION['email']; ?> </span>
         </div>
         <div class="logout">
-            <h3><button onclick="logout()">Sair</button></h3>
+            <h3><a href="logout.php">Sair</a></h3>
         </div>
         <div class="header-main">
             <div class="header-1">
@@ -65,49 +66,6 @@
             </p>
         </div>
     </div>
-
-    <!-- core Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-auth.js"></script>
-
-    <script>
-        // Firebase configuration and initialize
-        firebase.initializeApp({
-            apiKey: "AIzaSyD8GUnpkARy2q-WqOXuRF6kM52tOerGzpw",
-            authDomain: "walletadmin-5f07b.firebaseapp.com",
-            projectId: "walletadmin-5f07b",
-            storageBucket: "walletadmin-5f07b.appspot.com",
-            messagingSenderId: "1071595045930",
-            appId: "1:1071595045930:web:34752afad3c1bc0fd56f53"
-        });
-    </script>
-
-    <script type="text/javascript">
-        var uids = []
-        var data = []
-        authUser = Object.keys(window.sessionStorage).filter(item => item.startsWith('firebase:authUser'))[0]
-        if (authUser) {
-            console.log("current")
-            data[0] = JSON.parse(Object.values(window.sessionStorage).filter(i => i.startsWith(`{"uid"`))[0])
-            uid = data.map(x => x.uid)
-            uids[0] = uid[0]
-            console.log("aqui: ")
-            console.log(uids[0])
-        } else {
-            window.location.replace("telaLogin.php")
-        }
-    </script>
-    <script type="text/javascript">
-        function logout() {
-            console.log("sucess")
-            firebase.auth().signOut().then(() => {
-                window.location.reload()
-                }).catch((error) => {
-                    alert(error.message)
-                });
-        }
-    </script>
         
 </body>
 

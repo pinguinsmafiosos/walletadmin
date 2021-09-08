@@ -22,19 +22,19 @@
         <div class="slider">
 
             <div class="login">
-                <form>
-                    <input type="text" id="inputEmail" class="field" name="email" placeholder="Digite seu e-mail aqui" />
-                    <input type="password" id="inputPass" class="field" name="senha" placeholder="Digite a sua senha" />
+                <form method="POST" action="login.php">
+                    <input type="text" class="field" name="email" placeholder="Digite seu e-mail aqui" />
+                    <input type="password" class="field" name="senha" placeholder="Digite a sua senha" />
+                    <input type="submit" class="submit" value="Login" />
                 </form>
-                <input type="button" id="loginBtn" class="submit" value="Login" />
             </div>
             <div class="cadastro">
-                <form>
-                    <input type="text" id="emailCad" class="field" name="emailCad" placeholder="e-mail para cadastro" />
-                    <input type="password" id="senhaCad" class="field" name="senhaCad" placeholder="Senha para cadastro" />
-                    <input type="password" id="senhaCad2" class="field" name="senhaCad2" placeholder="Digite a senha novamente" />
+                <form method="POST" action="cadastro.php">
+                    <input type="text" class="field" name="emailCad" placeholder="e-mail para cadastro" />
+                    <input type="password" class="field" name="senhaCad" placeholder="Senha para cadastro" />
+                    <input type="password" class="field" name="senhaCad2" placeholder="Digite a senha novamente" />
+                    <input type="submit" class="submit" value="Cadastro" />
                 </form>
-                <input type="button" id="signUpBtn" class="submit" value="Cadastro" onclick="cadastrar()" />
             </div>
 
         </div>
@@ -61,26 +61,7 @@
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
     <script type="text/javascript" src="http://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
-    <!-- core Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-auth.js"></script>
-
-    <script>
-        // Firebase configuration and initialize
-        firebase.initializeApp({
-            apiKey: "AIzaSyD8GUnpkARy2q-WqOXuRF6kM52tOerGzpw",
-            authDomain: "walletadmin-5f07b.firebaseapp.com",
-            projectId: "walletadmin-5f07b",
-            storageBucket: "walletadmin-5f07b.appspot.com",
-            messagingSenderId: "1071595045930",
-            appId: "1:1071595045930:web:34752afad3c1bc0fd56f53"
-        });
-
-    </script>
-
     <script type="text/javascript" src="../js/slider.js"></script>
-    <script type="text/javascript" src="../js/auth.js"></script>
 
 </body>
 
