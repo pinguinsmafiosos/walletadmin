@@ -1,0 +1,136 @@
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    background-image: url('../img/fundo-login.jpg');
+}
+.login-box {
+    position: absolute;
+    width: 500px;
+    height: fit-content;
+    top: 300px;
+    left: 719px;
+    padding-bottom: 20px;
+    background: #0000006e;
+    border-radius: 32px;
+}
+.logo {
+    margin-left: 10px;
+    margin-top: 10px;
+    margin-right: 200px;
+}
+.login-cadastro {
+    color: white;
+    display: inline-block;
+    font-family: Arial, Helvetica, sans-serif;
+    padding-right: 10px;
+    margin-left: 10px;
+    margin-top: 5px;
+    margin-bottom: 0px;
+}
+.login-cadastro a {
+    color: white;
+    text-decoration: none;
+}
+.field {
+    color: #ffffff;
+    font-size: 20px;
+    width: 400px;
+    display: block;
+    padding: 0px;
+    padding-bottom: 2px;
+    margin-top: 30px;
+    margin-left: 10px;
+    border: none;
+    border-bottom: 1px solid white;
+    background-color: transparent;
+}
+.field::placeholder {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px;
+    color: white;
+    opacity: 0.7;
+}
+.submit {
+    cursor: pointer;
+    font-family: Arial, Helvetica, sans-serif;
+    width: 100px;
+    padding: 5px;
+    margin: 0px;
+    margin-top: 15px;
+    margin-left: 10px;
+    border: 1px solid white;
+    border-radius: 10px;
+    background-color: #ffffff69;
+}
+.submit:hover {
+    background-color: #ffffffad;
+}
+button.slick-prev {
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    border: none;
+    background-color: transparent;
+    visibility: hidden;
+}
+button.slick-prev::after {
+    content: "Login";
+    color: white;
+    visibility: visible;
+    position: absolute;
+    left: 15px;
+}
+button.slick-next {
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    border: none;
+    background-color: transparent;
+    position: absolute;
+    top: 0px;
+    left: 120px;
+    visibility: hidden;
+}
+button.slick-next::after {
+    content: "Cadastro";
+    color: white;
+    visibility: visible;
+    position: absolute;
+    left: -17px;
+}
+button.slick-disabled::after {
+    border-bottom: 2px solid white;
+}
+.errors {
+    width: 500px;
+    position: absolute;
+    height: fit-content;
+    margin: 0px;
+    top: 624px;
+    left: 719px;
+    background-color: #ff000078;
+    border-radius: 32px;
+}
+.errors-p {
+    color: white;
+    margin-left: 10px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+}
+.success {
+    width: 500px;
+    position: absolute;
+    height: fit-content;
+    margin: 0px;
+    top: 624px;
+    left: 719px;
+    background-color: #00ff1f78;
+    border-radius: 32px;
+}
+.success-p {
+    color: white;
+    margin-left: 10px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+}
