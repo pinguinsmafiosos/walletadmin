@@ -83,31 +83,8 @@
         });
     </script>
 
-    <script type="text/javascript">
-        var uids = []
-        var data = []
-        authUser = Object.keys(window.sessionStorage).filter(item => item.startsWith('firebase:authUser'))[0]
-        if (authUser) {
-            console.log("current")
-            data[0] = JSON.parse(Object.values(window.sessionStorage).filter(i => i.startsWith(`{"uid"`))[0])
-            uid = data.map(x => x.uid)
-            uids[0] = uid[0]
-            console.log("aqui: ")
-            console.log(uids[0])
-        } else {
-            window.location.replace("telaLogin.php")
-        }
-    </script>
-    <script type="text/javascript">
-        function logout() {
-            console.log("sucess")
-            firebase.auth().signOut().then(() => {
-                window.location.reload()
-                }).catch((error) => {
-                    alert(error.message)
-                });
-        }
-    </script>
+    <script src="../js/page_auth.js"></script>
+    <script src="../js/logout.js"></script>
         
 </body>
 

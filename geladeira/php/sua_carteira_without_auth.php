@@ -15,14 +15,15 @@
     if (!isset($_SESSION)) {
         session_start();
     }
+    include 'verifica_login.php';
     include 'verifica_carteira.php';
     ?>
     <header class="menu-principal">
         <div class="session">
-            <span> Olá, </span>
+            <span> Olá, <?php echo $_SESSION['email']; ?> </span>
         </div>
         <div class="logout">
-            <h3><button onclick="logout()">Sair</button></h3>
+            <h3><a href="logout.php">Sair</a></h3>
         </div>
         <div class="header-main">
             <div class="header-1">
@@ -198,7 +199,6 @@
     <!-- core Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-auth.js"></script>
 
     <script>
         // Firebase configuration and initialize
@@ -213,6 +213,8 @@
     </script>
 
     <!-- com carteira -->
+
+    <?php if ($row != 0) : ?>
 
         <div class="edit">
             <div class="modal-button">
@@ -273,123 +275,114 @@
         <div data-js="actions" class="actions">
         </div>
 
-        <!-- authentication -->
-    <script src="../js/page_auth.js"></script>
-    <script src="../js/logout.js"></script>
 
-    <script type="text/javascript">
-        <?php include("variables.php");
-        echo $actionsJS; ?>;
+        <script type="text/javascript">
+            <?php include("variables.php");
+            echo $actionsJS; ?>;
 
-        <?php echo $valuesJS; ?>;
+            <?php echo $valuesJS; ?>;
 
-        <?php echo $rawCotsJS; ?>;
+            <?php echo $rawCotsJS; ?>;
 
-        <?php echo $codActsJS; ?>;
+            <?php echo $codActsJS; ?>;
 
-        var numRows = <?php echo $row; ?>;
+            var numRows = <?php echo $row; ?>;
 
-        //define valuesf
-        var valuesf = [];
+            //define valuesf
+            var valuesf = [];
 
-        //define colors array
-        var colors = [];
-        colors[0] = 'rgb(255, 99, 132)';
-        colors[1] = 'rgb(54, 162, 235)';
-        colors[2] = 'rgb(139,0,0)';
-        colors[3] = 'rgb(255,0,0)';
-        colors[4] = 'rgb(250,128,114)';
-        colors[5] = 'rgb(255,69,0)';
-        colors[6] = 'rgb(255,140,0)';
-        colors[7] = 'rgb(255,215,0)';
-        colors[8] = 'rgb(240,230,140)';
-        colors[9] = 'rgb(154,205,50)';
-        colors[10] = 'rgb(85,107,47)';
-        colors[11] = 'rgb(144,238,144)';
-        colors[12] = 'rgb(0,250,154)';
-        colors[13] = 'rgb(47,79,79)';
-        colors[14] = 'rgb(0,255,255)';
-        colors[15] = 'rgb(100,149,237)';
-        colors[16] = 'rgb(0,0,128)';
-        colors[17] = 'rgb(138,43,226)';
-        colors[18] = 'rgb(255,0,255)';
-        colors[19] = 'rgb(139,69,19)';
+            //define colors array
+            var colors = [];
+            colors[0] = 'rgb(255, 99, 132)';
+            colors[1] = 'rgb(54, 162, 235)';
+            colors[2] = 'rgb(139,0,0)';
+            colors[3] = 'rgb(255,0,0)';
+            colors[4] = 'rgb(250,128,114)';
+            colors[5] = 'rgb(255,69,0)';
+            colors[6] = 'rgb(255,140,0)';
+            colors[7] = 'rgb(255,215,0)';
+            colors[8] = 'rgb(240,230,140)';
+            colors[9] = 'rgb(154,205,50)';
+            colors[10] = 'rgb(85,107,47)';
+            colors[11] = 'rgb(144,238,144)';
+            colors[12] = 'rgb(0,250,154)';
+            colors[13] = 'rgb(47,79,79)';
+            colors[14] = 'rgb(0,255,255)';
+            colors[15] = 'rgb(100,149,237)';
+            colors[16] = 'rgb(0,0,128)';
+            colors[17] = 'rgb(138,43,226)';
+            colors[18] = 'rgb(255,0,255)';
+            colors[19] = 'rgb(139,69,19)';
 
 
-        //must define:
-        //values array
-    </script>
+            //must define:
+            //values array
+        </script>
 
-    <script src="../js/firestore.js"></script>
+        <script src="../js/firestore.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.3.2/chart.min.js"></script>
     <script>
+        var ctx = document.getElementsByClassName("line-chart");
 
-        verifyCarteira().then((c) => {
-            if (!val) {
-                var ctx = document.getElementsByClassName("line-chart");
-        
-                //type, data ou options
-                var chartGraph = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                        datasets: [{
-                            label: `Variação Patrimonial - ${new Date().getFullYear()}`,
-                            data: [5, 10, 5, 14, 20, 15, 6, 14, 8, 12, 15, 5, 10],
-                            borderWidth: 6,
-                            borderColor: ['rgba(77,166,253,0.85)'],
-                            backgroundColor: 'transparent',
-                            tension: 0.5
-                        }]
-                    },
-                    options: {
-                        plugins: {
-                            title: {
-                                display: true,
-                                text: 'Relatório anual'
-                            }
+        //type, data ou options
+        var chartGraph = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: `Variação Patrimonial - ${new Date().getFullYear()}`,
+                    data: [5, 10, 5, 14, 20, 15, 6, 14, 8, 12, 15, 5, 10],
+                    borderWidth: 6,
+                    borderColor: ['rgba(77,166,253,0.85)'],
+                    backgroundColor: 'transparent',
+                    tension: 0.5
+                }]
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Relatório anual'
+                    }
+                }
+            }
+        });
+
+        getCots().then(x => {
+
+            // for (let i = 0; i < numRows; i++) {
+            //     valuesf[i] = (values[i] * (prices[i]/rawCots[i]))
+            // }
+
+            var ctx2 = document.getElementsByClassName("doughnut-chart");
+            var doughnutGraph = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: actions,
+                    datasets: [{
+                        label: "Diversificação dos ativos",
+                        data: valuesf,
+                        borderWidth: 0,
+                        backgroundColor: colors,
+                        hoverOffset: 20
+                    }]
+                },
+                options: {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Diversificação da carteira'
                         }
                     }
-                });
-        
-                getCots().then(x => {
-        
-                    var ctx2 = document.getElementsByClassName("doughnut-chart");
-                    var doughnutGraph = new Chart(ctx2, {
-                        type: 'doughnut',
-                        data: {
-                            labels: actions,
-                            datasets: [{
-                                label: "Diversificação dos ativos",
-                                data: valuesf,
-                                borderWidth: 0,
-                                backgroundColor: colors,
-                                hoverOffset: 20
-                            }]
-                        },
-                        options: {
-                            plugins: {
-                                title: {
-                                    display: true,
-                                    text: 'Diversificação da carteira'
-                                }
-                            }
-                        }
-                    });
-        
-                })
-                
-            } else {
-                document.getElementsByClassName("graph")[0].style.display = "none"
-                document.getElementsByClassName("graph2")[0].style.display = "none"
-                document.getElementsByClassName("title1")[0].style.display = "none"
-                document.getElementsByClassName("edit")[0].style.display = "none"
-            }
+                }
+            });
+
         })
 
-
     </script>
+
+    <?php endif; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
 

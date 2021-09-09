@@ -1,4 +1,5 @@
 const db = firebase.firestore().collection("actions");
+const db2 = firebase.firestore()
 var divact = document.querySelector('[data-js="actions"]')
 
 var data = []
@@ -8,6 +9,18 @@ var bvmfs = []
 var entsCopy = []
 var ents = []
 var i = 0
+var isCarteira
+var val
+
+async function verifyCarteira() {
+  await db2.collection("carteira").where("usuario", "==", email).get()
+  .then((querySnapshot) => {
+      isCarteira = querySnapshot.empty
+    })
+    val = isCarteira
+
+}
+
 async function  getCots(){
   
   var allcots = await db.where("bvmf","in",actions).get();
