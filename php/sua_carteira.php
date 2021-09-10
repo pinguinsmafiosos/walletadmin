@@ -10,12 +10,11 @@
     <title>Sua Carteira</title>
 </head>
 
-<body>
+<body id="body">
     <?php
     if (!isset($_SESSION)) {
         session_start();
     }
-    include 'verifica_carteira.php';
     ?>
     <header class="menu-principal">
         <div class="session">
@@ -59,8 +58,13 @@
     <div class="title">
         <h1>RESUMO DA SUA CARTEIRA</h1>
     </div>
+
+    <!-- loading div -->
+    <div class="loading">
+        <div></div>
+    </div>
+
     <!-- modal sem carteira -->
-    <?php if ($row == 0) : ?>
 
         <div class="modal-button">
             Não tem carteira ainda?
@@ -78,7 +82,7 @@
                     </div>
 
                     <div class="modal-body">
-                        <form method="POST" action="cria_carteira.php">
+                        <form>
                             <div class="input-group mb-2">
                                 <label class="input-group-text" for="inputGroupSelect01">Selecione o número de ações diferentes que possui:</label>
                                 <select onchange="loadInput();" name="num" id="select1">
@@ -95,7 +99,7 @@
                                     <option value="10">10</option>
                                 </select>
                             </div>
-                            <h5>Ação / valor investido na ação</h5>
+                            <h5>Ação / número de papéis que possui</h5>
 
                             <div id="inputs">
                             </div>
@@ -110,8 +114,11 @@
                     </form>
                     <script type="text/javascript">
                         var data2 = []
+                        var prices2Copy = []
                         var prices2 = []
+                        var idsCopy = []
                         var ids = []
+                        var fbvmfs = []
                         var actions2 = []
                         var j = 0
 
@@ -121,17 +128,29 @@
 
                         async function getCots2() {
                             const db = firebase.firestore().collection("actions");
+                            //const db2 = firebase.firestore()
                             
                             var allcots2 = await db.where("bvmf","in",actions2).get();
 
                             for(const doc of allcots2.docs){
                                 data2[0] = doc.data()
                                 price2 = data2.map(x => x.price)
-                                ids[j] = parseInt(doc.id) + parseInt(1)
-                                prices2[j] = price2[0]
+                                fbvmf = data2.map(y => y.bvmf)
+                                idsCopy[j] = parseInt(doc.id) + parseInt(1)
+                                prices2Copy[j] = price2[0]
+                                fbvmfs[j] = fbvmf[0]
                                 
                                 j++
                                 
+                            }
+                            // sort ids
+                            for (let i = 0; i < actions2.length; i++) {
+                                for (let j = 0; j < actions2.length; j++) {
+                                    if (fbvmfs[j] === actions2[i]) {
+                                        ids[i] = idsCopy[j]
+                                        prices2[i] = prices2Copy[j]
+                                    }
+                                }
                             }
                         }
                         
@@ -172,16 +191,50 @@
                             
                             if (count == 0) {
                                 getCots2().then(y => {
-    
+                                    const db3 = firebase.firestore()
+                                    const batch = db3.batch()
+                                    const cRef = db3.collection("carteira")
+                                    let i = 0
+
                                     for (let i = 1; i <= num; i++) {
                                         document.getElementById(`cot${i}`).value = prices2[i-1]
                                         document.getElementById(`id${i}`).value = ids[i-1]
                                         console.log(document.getElementById(`id${i}`).value)
+                                    }
+                                    
+                                    console.log("formulário enviado")
+
+                                    for (let i = 0; i < actions2.length; i++) {
+                                        batch.set(cRef.doc(), {
+                                            codAcao: ids[i],
+                                            numPapeis: document.getElementById(`paper${i+1}`).value,
+                                            usuario: email,
+                                            rawCot: prices2[i]
+                                        })
                                         
                                     }
-    
-                                        console.log("formulário enviado")
-                                        document.querySelector("form").submit()
+
+                                    batch.commit().then(() => {
+                                        alert("Carteira criada com sucesso!")
+                                        window.location.reload()
+                                    })
+
+                                    // for (let i = 0; i < actions2.length; i++) {
+                                    //     db2.collection("carteira").doc().set({
+                                    //         codAcao: ids[i],
+                                    //         numPapeis: document.getElementById(`paper${i+1}`).value,
+                                    //         usuario: email,
+                                    //         rawCot: prices2[i]
+                                    //     })
+                                    //     .then(() => {
+                                    //         console.log("Document successfully written!");
+                                    //     })
+                                    //     .catch((error) => {
+                                    //         console.error("Error writing document: ", error);
+                                    //     });
+                                    // }
+
+                                    //window.location.reload()
                                 })
                             }
 
@@ -191,9 +244,6 @@
                 </div>
             </div>
         </div>
-
-    <?php endif;
-    unset($_SESSION['sem_carteira']); ?>
 
     <!-- core Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
@@ -233,7 +283,7 @@
                         <div class="modal-body">
                             <form id="form-edit" method="POST" action="edita_carteira.php">
                                 
-                                <h5>Ação / valor investido na ação</h5>
+                                <h5>Ação / número de papéis que possui</h5>
 
                                 <div id="inputs2">
                                 </div>
@@ -283,14 +333,9 @@
 
         <?php echo $valuesJS; ?>;
 
-        <?php echo $rawCotsJS; ?>;
-
         <?php echo $codActsJS; ?>;
 
         var numRows = <?php echo $row; ?>;
-
-        //define valuesf
-        var valuesf = [];
 
         //define colors array
         var colors = [];
@@ -324,9 +369,26 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.3.2/chart.min.js"></script>
     <script>
+        document.getElementsByClassName("graph")[0].style.display = "none"
+        document.getElementsByClassName("graph2")[0].style.display = "none"
+        document.getElementsByClassName("title1")[0].style.display = "none"
+        document.getElementsByClassName("edit")[0].style.display = "none"
+        document.getElementsByClassName("modal-button")[0].style.display = "none"
 
         verifyCarteira().then((c) => {
             if (!val) {
+
+                //reveal items
+                document.getElementsByClassName("loading")[0].style.display = "none"
+                document.getElementById("body").style.background = "#007eff30"
+                document.getElementsByClassName("modal-button")[0].style.display = "none"
+                
+                document.getElementsByClassName("graph")[0].style.display = ""
+                document.getElementsByClassName("graph2")[0].style.display = ""
+                document.getElementsByClassName("title1")[0].style.display = ""
+                document.getElementsByClassName("edit")[0].style.display = ""
+
+
                 var ctx = document.getElementsByClassName("line-chart");
         
                 //type, data ou options
@@ -352,39 +414,35 @@
                         }
                     }
                 });
-        
-                getCots().then(x => {
-        
-                    var ctx2 = document.getElementsByClassName("doughnut-chart");
-                    var doughnutGraph = new Chart(ctx2, {
-                        type: 'doughnut',
-                        data: {
-                            labels: actions,
-                            datasets: [{
-                                label: "Diversificação dos ativos",
-                                data: valuesf,
-                                borderWidth: 0,
-                                backgroundColor: colors,
-                                hoverOffset: 20
-                            }]
-                        },
-                        options: {
-                            plugins: {
-                                title: {
-                                    display: true,
-                                    text: 'Diversificação da carteira'
-                                }
+
+                var ctx2 = document.getElementsByClassName("doughnut-chart");
+                var doughnutGraph = new Chart(ctx2, {
+                    type: 'doughnut',
+                    data: {
+                        labels: bvmfs,
+                        datasets: [{
+                            label: "Diversificação dos ativos",
+                            data: valuesf,
+                            borderWidth: 0,
+                            backgroundColor: colors,
+                            hoverOffset: 20
+                        }]
+                    },
+                    options: {
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Diversificação da carteira'
                             }
                         }
-                    });
+                    }
+                });
         
-                })
                 
             } else {
-                document.getElementsByClassName("graph")[0].style.display = "none"
-                document.getElementsByClassName("graph2")[0].style.display = "none"
-                document.getElementsByClassName("title1")[0].style.display = "none"
-                document.getElementsByClassName("edit")[0].style.display = "none"
+                document.getElementsByClassName("loading")[0].style.display = "none"
+                document.getElementById("body").style.background = "#007eff30"
+                document.getElementsByClassName("modal-button")[0].style.display = ""
             }
         })
 
@@ -429,7 +487,7 @@
                     <input id="contain${i}" type="text" name="action${i}" class="form-control col-3" placeholder="Ex: PETR4" aria-label="Username" required>
 
                     <span class="input-group-text">R$</span>
-                    <input type="number" name="value${i}" class="form-control" aria-label="Amount (to the nearest dollar)" required>
+                    <input type="number" name="value${i}" id="paper${i}" class="form-control" aria-label="Amount (to the nearest dollar)" required>
 
                     <input type="number" name="cot${i}" id="cot${i}" class="cots">
                     <input type="number" name="id${i}" id="id${i}" class="ids">

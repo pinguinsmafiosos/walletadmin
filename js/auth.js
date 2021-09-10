@@ -25,17 +25,6 @@ loginBtn.addEventListener('click',authenticate => {
     })
 
   })
-    
-  // .then((userCredential) => {
-  //   console.log("email: ")
-  //   console.log(firebase.auth().currentUser.email)
-  //   //window.location.replace("index.php")
-  // })
-  // .catch((error) => {
-  //   var errorCode = error.code;
-  //   var errorMessage = error.message;
-  //   alert(errorMessage)
-  // })
 
 })
 
