@@ -219,22 +219,6 @@
                                         window.location.reload()
                                     })
 
-                                    // for (let i = 0; i < actions2.length; i++) {
-                                    //     db2.collection("carteira").doc().set({
-                                    //         codAcao: ids[i],
-                                    //         numPapeis: document.getElementById(`paper${i+1}`).value,
-                                    //         usuario: email,
-                                    //         rawCot: prices2[i]
-                                    //     })
-                                    //     .then(() => {
-                                    //         console.log("Document successfully written!");
-                                    //     })
-                                    //     .catch((error) => {
-                                    //         console.error("Error writing document: ", error);
-                                    //     });
-                                    // }
-
-                                    //window.location.reload()
                                 })
                             }
 
@@ -267,12 +251,12 @@
         <div class="edit">
             <div class="modal-button">
                 Editar/excluir ações:
-                <button type="button" class="btn btn-primary mx-auto" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="editContent();">
+                <button type="button" class="btn btn-primary mx-auto" data-bs-toggle="modal" data-bs-target="#staticBackdrop2" onclick="editContent();">
                     Editar carteira
                 </button>
             </div>
 
-            <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal fade" id="staticBackdrop2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -281,7 +265,7 @@
                         </div>
 
                         <div class="modal-body">
-                            <form id="form-edit" method="POST" action="edita_carteira.php">
+                            <form id="form-edit">
                                 
                                 <h5>Ação / número de papéis que possui</h5>
 
@@ -504,16 +488,18 @@
         var toDelete = []
         var toEdit = []
         function editContent() {
-
+            console.log(numPapeis)
+            console.log(codAcoes)
+            console.log(bvmfs)
             document.getElementById("inputs2").innerHTML = ""
 
-            for (let i = 0; i < actions.length; i++) {
+            for (let i = 0; i < bvmfs.length; i++) {
                 document.getElementById("inputs2").innerHTML += `<div class="input-group mb-3 align-items-start">
 
-                    <input class="form-control acts" type="text" placeholder="${actions[i]}" aria-label="Disabled input example" disabled>
+                    <input class="form-control acts" type="text" placeholder="${bvmfs[i]}" aria-label="Disabled input example" disabled>
 
-                    <span class="input-group-text">R$</span>
-                    <input type="number" id="money${i+1}" name="invest${i+1}" class="form-control" value="${valuesf[i].toFixed(3)}" aria-label="Amount (to the nearest dollar)" required>
+                    <span class="input-group-text rspan">R$</span>
+                    <input type="number" id="money${i+1}" name="invest${i+1}" class="form-control" value="${parseFloat(sumPapeis[i])}" aria-label="Amount (to the nearest dollar)" required>
                     <button type="button" class="btn btn-danger" onclick="deleteAction${i+1}();">Delete</button>
 
                     </div>`
@@ -523,23 +509,25 @@
 
         }
         function confirmEdit() {
+            //remove empty spaces from array
             toDelete = toDelete.filter(Boolean)
 
             //define toEdit values
-            for (let i = 0; i < actions.length; i++) {
+            for (let i = 0; i < bvmfs.length; i++) {
                 toEdit[i] = []
-                if (document.getElementById(`money${i+1}`).value != valuesf[i].toFixed(3)) {
+                if (document.getElementById(`money${i+1}`).value != numPapeis[i]) {
                     toEdit[i][i] = document.getElementById(`money${i+1}`).value
-                    toEdit[i][(i+1)] = codActs[i]
+                    toEdit[i][(i+1)] = codAcoes[i]
                 }
                     
             }
 
+            //delete empty spaces from matrix
             for (let i = 1; i < toEdit.length; i++) {
                 toEdit[i].splice(0,i)
             }
 
-            //mark empty arrays location
+            //mark (not edited on ui) arrays location
             let pos = []
             let p = 0
             for (let i = 0; i < toEdit.length; i++) {
@@ -549,46 +537,127 @@
                 }
             }
             
-            //delete empty arrays
+            //delete (not edited on ui) arrays
             p = 0
             for (let i = 0; i < pos.length; i++) {
                     toEdit.splice((pos[i]-p),1)
                     p++
             }
 
-            document.getElementById("inputs2").innerHTML += `<input type="number" name="tdlen" class="money" value="${toDelete.length}">`
-            document.getElementById("inputs2").innerHTML += `<input type="number" name="editlen" class="money" value="${toEdit.length}">`
+            //actions code to delete
+            console.log("actions code to delete: ")
+            console.log(toDelete)
 
-            for (let i = 0; i < toDelete.length; i++) {
-                document.getElementById("inputs2").innerHTML += `<input type="number" name="money${i+1}" class="money" value="${toDelete[i]}">`
-            }
-            for (let i = 0; i < toEdit.length; i++) {
-                document.getElementById("inputs2").innerHTML += `<input type="number" name="vedit${i+1}" class="money" value="${toEdit[i][0]}">`
-            }
-            for (let i = 0; i < toEdit.length; i++) {
-                document.getElementById("inputs2").innerHTML += `<input type="number" name="editcode${i+1}" class="money" value="${toEdit[i][1]}">`
-            }
-            for (let i = 0; i < toEdit.length; i++) {
-                document.getElementById("inputs2").innerHTML += `<input type="number" id="cotsF${i+1}" name="rawCotsEdit${i+1}" class="money">`
-            }
-            for (let i = 0; i < toEdit.length; i++) {
-                document.getElementById("inputs2").innerHTML += `<input type="number" id="idsF${i+1}" name="idsF${i+1}" class="money">`
-            }
+            console.log(toEdit)
 
             var data2 = []
             var prices2 = []
             var ids = []
             var j = 0
             var actions3 = []
+            var papeisCut = []
             
-            pos2 = []
             p = 0
 
-            for (let i = 0; i < actions.length; i++) {
+            //get symbol from edited actions
+            for (let i = 0; i < bvmfs.length; i++) {
                 if (!pos.includes(i)) {
-                    actions3[p] = actions[i]
+                    actions3[p] = bvmfs[i]
+                    papeisCut[p] = numPapeis[i]
                     p++
                 }
+            }
+
+            p = 0
+            //remove marked to delete symbols
+            for (let i = 0; i < toEdit.length; i++) {
+                if (toDelete.includes(toEdit[i][1])) {
+                    actions3.splice((i-p),1)
+                    toEdit.splice((i-p),1)
+                    p++
+                }
+
+            }
+
+            console.log(actions3)
+            console.log(toEdit)
+
+            const db3 = firebase.firestore()
+            const cRef = db3.collection("carteira")
+            const batch = db3.batch()
+
+            var prices3Copy = []
+            var prices3 = []
+            var ids3 = []
+            var idsToDelete = []
+            var q = 0
+
+            async function commitEdits() {
+                //getting fresh ids,prices
+                if (actions3.length) {
+                    const db = firebase.firestore().collection("actions");
+                    
+                    var allcots2 = await db.where("bvmf","in",actions3).get();
+                    for(const doc of allcots2.docs) {
+                        //data2[0] = doc.data()
+                        ids3[j] = doc.data().codAcao
+                        prices3Copy[j] = doc.data().price
+                        
+                        j++
+                    }
+                }
+                //getting doc ids to delete
+                if (toDelete.length) {
+                    var allcots3 = await cRef.where("usuario","==",email).get();
+                    for(const doc of allcots3.docs) {
+                        if (toDelete.includes(doc.data().codAcao)) {
+                            idsToDelete[q] = doc.id
+                            console.log(idsToDelete)
+                            
+                            q++
+                        }
+                    }
+                }
+                
+                if (actions3.length) {
+                    //sort prices3
+                    for (let i = 0; i < actions3.length; i++) {
+                        for (let j = 0; j < actions3.length; j++) {
+                            if (ids3[j] === toEdit[i][1]) {
+                                prices3[i] = prices3Copy[j]
+                            }
+                        }
+                    }
+                }
+                console.log("sorted prices3: ")
+                console.log(prices3)
+                
+                if (actions3.length) {
+                    //define batch sets
+                    for (let i = 0; i < actions3.length; i++) {
+                        batch.set(cRef.doc(), {
+                            codAcao: toEdit[i][1],
+                            numPapeis: toEdit[i][0] - papeisCut[i],
+                            usuario: email,
+                            rawCot: prices3[i]
+                        })                        
+                    }
+                }
+
+                if (toDelete.length) {
+                    //define batch deletes
+                    for (let i = 0; i < idsToDelete.length; i++) {
+                        let delRef = cRef.doc(`${idsToDelete[i]}`)
+                        console.log("delRefs")
+                        console.log(delRef)
+                        batch.delete(delRef)
+                    }
+                }
+
+                batch.commit().then(() => {
+                    alert("carteira editada com sucesso!")
+                })
+
             }
 
             async function getCots2() {
@@ -608,96 +677,92 @@
                     }
                 }
             }
-            getCots2().then(y => {
-
-                for (let i = 1; i <= toEdit.length; i++) {
-                    document.getElementById(`cotsF${i}`).value = prices2[i-1]
-                    document.getElementById(`idsF${i}`).value = ids[i-1]
-                    
-                }
-                document.getElementById("form-edit").submit()
+            commitEdits().then(y => {
+                
+                //window.location.reload()
             })
 
         }
+        //delete buttons functions
         function deleteAction1() {
             document.getElementsByClassName("acts")[0].style.display = "none"
-            document.getElementsByClassName("input-group-text")[0].style.display = "none"
+            document.getElementsByClassName("rspan")[0].style.display = "none"
             document.getElementById("money1").style.display = "none"
             document.getElementsByClassName("btn-danger")[0].style.display = "none"
 
-            toDelete[0] = codActs[0]
+            toDelete[0] = codAcoes[0]
         }
         function deleteAction2() {
             document.getElementsByClassName("acts")[1].style.display = "none"
-            document.getElementsByClassName("input-group-text")[1].style.display = "none"
+            document.getElementsByClassName("rspan")[1].style.display = "none"
             document.getElementById("money2").style.display = "none"
             document.getElementsByClassName("btn-danger")[1].style.display = "none"
 
-            toDelete[1] = codActs[1]
+            toDelete[1] = codAcoes[1]
         }
         function deleteAction3() {
             document.getElementsByClassName("acts")[2].style.display = "none"
-            document.getElementsByClassName("input-group-text")[2].style.display = "none"
+            document.getElementsByClassName("rspan")[2].style.display = "none"
             document.getElementById("money3").style.display = "none"
             document.getElementsByClassName("btn-danger")[2].style.display = "none"
 
-            toDelete[2] = codActs[2]
+            toDelete[2] = codAcoes[2]
         }
         function deleteAction4() {
             document.getElementsByClassName("acts")[3].style.display = "none"
-            document.getElementsByClassName("input-group-text")[3].style.display = "none"
+            document.getElementsByClassName("rspan")[3].style.display = "none"
             document.getElementById("money4").style.display = "none"
             document.getElementsByClassName("btn-danger")[3].style.display = "none"
 
-            toDelete[3] = codActs[3]
+            toDelete[3] = codAcoes[3]
         }
         function deleteAction5() {
             document.getElementsByClassName("acts")[4].style.display = "none"
-            document.getElementsByClassName("input-group-text")[4].style.display = "none"
+            document.getElementsByClassName("rspan")[4].style.display = "none"
             document.getElementById("money5").style.display = "none"
             document.getElementsByClassName("btn-danger")[4].style.display = "none"
 
-            toDelete[4] = codActs[4]
+            toDelete[4] = codAcoes[4]
         }
         function deleteAction6() {
             document.getElementsByClassName("acts")[5].style.display = "none"
-            document.getElementsByClassName("input-group-text")[5].style.display = "none"
+            document.getElementsByClassName("rspan")[5].style.display = "none"
             document.getElementById("money6").style.display = "none"
             document.getElementsByClassName("btn-danger")[5].style.display = "none"
 
-            toDelete[5] = codActs[5]
+            toDelete[5] = codAcoes[5]
         }
         function deleteAction7() {
             document.getElementsByClassName("acts")[6].style.display = "none"
-            document.getElementsByClassName("input-group-text")[6].style.display = "none"
+            document.getElementsByClassName("rspan")[6].style.display = "none"
             document.getElementById("money7").style.display = "none"
             document.getElementsByClassName("btn-danger")[6].style.display = "none"
 
-            toDelete[6] = codActs[6]
+            toDelete[6] = codAcoes[6]
         }
         function deleteAction8() {
             document.getElementsByClassName("acts")[7].style.display = "none"
-            document.getElementsByClassName("input-group-text")[7].style.display = "none"
+            document.getElementsByClassName("rspan")[7].style.display = "none"
             document.getElementById("money8").style.display = "none"
             document.getElementsByClassName("btn-danger")[7].style.display = "none"
 
-            toDelete[7] = codActs[7]
+            toDelete[7] = codAcoes[7]
         }
         function deleteAction9() {
             document.getElementsByClassName("acts")[8].style.display = "none"
-            document.getElementsByClassName("input-group-text")[8].style.display = "none"
+            document.getElementsByClassName("rspan")[8].style.display = "none"
             document.getElementById("money9").style.display = "none"
             document.getElementsByClassName("btn-danger")[8].style.display = "none"
 
-            toDelete[8] = codActs[8]
+            toDelete[8] = codAcoes[8]
         }
         function deleteAction10() {
             document.getElementsByClassName("acts")[9].style.display = "none"
-            document.getElementsByClassName("input-group-text")[9].style.display = "none"
+            document.getElementsByClassName("rspan")[9].style.display = "none"
             document.getElementById("money10").style.display = "none"
             document.getElementsByClassName("btn-danger")[9].style.display = "none"
 
-            toDelete[9] = codActs[9]
+            toDelete[9] = codAcoes[9]
         }
     </script>
 

@@ -4,12 +4,9 @@ var data = []
 
 authUser = Object.keys(window.sessionStorage).filter(item => item.startsWith('firebase:authUser'))[0]
 if (authUser) {
-    console.log("current")
     data[0] = JSON.parse(Object.values(window.sessionStorage).filter(i => i.startsWith(`{"uid"`))[0])
     email = data[0].email
     uid = data[0].uid
-    console.log(email)
-    console.log(uid)
 
     document.getElementsByClassName("session")[0].innerHTML += `<span>${email}</span>`
     

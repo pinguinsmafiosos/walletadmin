@@ -2,7 +2,7 @@ const db = firebase.firestore().collection("actions");
 const db2 = firebase.firestore()
 var divact = document.querySelector('[data-js="actions"]')
 
-var data = []
+var docData
 var pricesCopy = []
 var prices = []
 var bvmfs = []
@@ -24,18 +24,16 @@ var rawCots = []
 var valuesf = []
 var bvmfsCopy = []
 
+var sumPapeis = []
+
 async function verifyCarteira() {
   await db2.collection("carteira").where("usuario", "==", email).get()
   .then((querySnapshot) => {
       isCarteira = querySnapshot.empty
       querySnapshot.forEach((doc) => {
-          dat[0] = doc.data()
-          act = dat.map(x => x.numPapeis)
-          cods = dat.map(y => y.codAcao)
-          raw = dat.map(z => z.rawCot)
-          numPapeisCopy[g] = act[0]
-          codAcoesCopy[g] = cods[0]
-          rawCotsCopy[g] = raw[0]
+          numPapeisCopy[g] = doc.data().numPapeis
+          codAcoesCopy[g] = doc.data().codAcao
+          rawCotsCopy[g] = doc.data().rawCot
 
           g++
       });
@@ -49,15 +47,11 @@ async function verifyCarteira() {
       var allcots = await db.where("codAcao","in",codAcoes).get()
   
       for(const doc of allcots.docs){
-        data[0] = doc.data()
-        price = data.map(x => x.price)
-        bvmf = data.map(y => y.bvmf)
-        ent = data.map(z => z.empresa)
-        cod2 = data.map(a => a.codAcao)
-        pricesCopy[i] = price[0]
-        bvmfsCopy[i] = bvmf[0]
-        entsCopy[i] = ent[0]
-        cods2[i] = cod2[0]
+        docData = doc.data()
+        pricesCopy[i] = docData.price
+        bvmfsCopy[i] = docData.bvmf
+        entsCopy[i] = docData.empresa
+        cods2[i] = docData.codAcao
         i++
       }
       
@@ -72,14 +66,83 @@ async function verifyCarteira() {
         }
       }
     
-    
-      for (let i = 0; i < codAcoes.length; i++) {
-        valuesf[i] = ((numPapeis[i]*prices[i])*(prices[i]/rawCots[i]))
+      //mark duplicate positions
+      let reps = []
+      reps[0] = []
+      reps[1] = []
+
+      let aux = 0
+      
+      function getAllIndexes(arr, val) {
+        var indexes = [], i;
+        for(i = 0; i < arr.length; i++)
+            if (arr[i] === val)
+                indexes.push(i);
+        return indexes;
       }
-    
+
+      let uniqueChars = bvmfs.filter((c, index) => {
+          return bvmfs.indexOf(c) === index;
+      });
+
+      reps[0] = uniqueChars
+
+      for (let i = 0; i < uniqueChars.length; i++) {
+        reps[1][i] = getAllIndexes(bvmfs,uniqueChars[i])
+      }
+
+      console.log(bvmfs)
+      console.log("reps :")
+      console.log(reps)
+
+      //define valuesf and precos medios
       let percent = []
-      for (let i = 0; i < codAcoes.length; i++) {
-        percent[i] = ((prices[i]/rawCots[i])-1)*100
+      let precosMedios = []
+      for (let i = 0; i < reps[0].length; i++) {
+        let prices2 = []
+        let papeis2 = []
+        let rawCots2 = []
+        let sum = 0
+        let sum1 = 0
+        let sum2 = 0
+        for (let j = 0; j < bvmfs.length; j++) {
+          for (let k = 0; k < reps[1][i].length; k++) {
+            if (j == reps[1][i][k]) {
+              prices2[aux] = prices[j]
+              rawCots2[aux] = rawCots[j]
+              papeis2[aux] = numPapeis[j]
+
+              sum += (parseFloat(papeis2[aux])*parseFloat(rawCots2[aux]))
+
+              sum2 += (parseFloat(papeis2[aux])*parseFloat(rawCots2[aux]))*(parseFloat(prices2[aux])/parseFloat(rawCots2[aux]))
+
+              sum1 += sum2
+
+              aux++
+              sum2 = 0
+            }
+          }
+        }
+        precosMedios[i] = parseFloat(((sum)/(papeis2.reduce((acc,num) => parseFloat(acc)+parseFloat(num)))).toFixed(3))
+        valuesf[i] = parseFloat(sum1.toFixed(3))
+        percent[i] = ((prices2[0]/precosMedios[i])-1)*100
+
+        sumPapeis[i] = papeis2.reduce((acc,num) => parseFloat(acc)+parseFloat(num))
+
+        aux = 0
+        sum = 0
+        sum1 = 0
+        sum2 = 0
+        
+      }
+      
+      console.log("preços médios: ",precosMedios)
+      console.log("valuesf: ",valuesf)
+      console.log("percent: ",percent)
+
+      bvmfs = reps[0]
+
+      for (let i = 0; i < bvmfs.length; i++) {
 
         divact.innerHTML += `<div class="actions-list">
             <div class="card-text">
