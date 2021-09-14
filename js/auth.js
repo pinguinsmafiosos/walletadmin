@@ -16,7 +16,7 @@ loginBtn.addEventListener('click',authenticate => {
     return firebase.auth().signInWithEmailAndPassword(login.value, pass.value).then((userCredential) => {
       console.log("email: ")
       console.log(firebase.auth().currentUser.email)
-      window.location.replace("index.php")
+      window.location.replace("index.html")
     })
     .catch((error) => {
       var errorCode = error.code;
@@ -36,7 +36,7 @@ function cadastrar() {
             // Signed in 
             var user = userCredential.user;
             alert("cadastrado com sucesso")
-            window.location.replace("index.php")
+            window.location.replace("index.html")
           })
           .catch((error) => {
             var errorCode = error.code;

@@ -11,11 +11,6 @@
 </head>
 
 <body id="body">
-    <?php
-    if (!isset($_SESSION)) {
-        session_start();
-    }
-    ?>
     <header class="menu-principal">
         <div class="session">
             <span> Olá, </span>
@@ -43,9 +38,9 @@
         <div class="header-2">
             <div class="menu">
                 <ul>
-                    <li><a href="index.php">Boas-Vindas</a></li>
-                    <li><a href="">Sua Carteira</a></li>
-                    <li><a href="cotacoes.php">Cotações</a></li>
+                    <li><a href="index.html">Boas-Vindas</a></li>
+                    <li><a href="sua_carteira.html">Sua Carteira</a></li>
+                    <li><a href="cotacoes.html">Cotações</a></li>
                     <li><a href="">Histórico</a></li>
                     <li><a href="">Contatos</a></li>
                 </ul>
@@ -321,14 +316,6 @@
     <script src="../js/logout.js"></script>
 
     <script type="text/javascript">
-        <?php include("variables.php");
-        echo $actionsJS; ?>;
-
-        <?php echo $valuesJS; ?>;
-
-        <?php echo $codActsJS; ?>;
-
-        var numRows = <?php echo $row; ?>;
 
         //define colors array
         var colors = [];

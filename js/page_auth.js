@@ -22,6 +22,6 @@ firebase.auth().onAuthStateChanged(function(user) {
         console.log(uid)
         //unsubscribe()
     } else {
-        window.location.replace("telaLogin.php")
+        window.location.replace("telaLogin.html")
     }
 });

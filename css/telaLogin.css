@@ -102,35 +102,3 @@ button.slick-next::after {
 button.slick-disabled::after {
     border-bottom: 2px solid white;
 }
-.errors {
-    width: 500px;
-    position: absolute;
-    height: fit-content;
-    margin: 0px;
-    top: 624px;
-    left: 719px;
-    background-color: #ff000078;
-    border-radius: 32px;
-}
-.errors-p {
-    color: white;
-    margin-left: 10px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: bold;
-}
-.success {
-    width: 500px;
-    position: absolute;
-    height: fit-content;
-    margin: 0px;
-    top: 624px;
-    left: 719px;
-    background-color: #00ff1f78;
-    border-radius: 32px;
-}
-.success-p {
-    color: white;
-    margin-left: 10px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: bold;
-}
