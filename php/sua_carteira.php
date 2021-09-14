@@ -265,9 +265,18 @@
                         </div>
 
                         <div class="modal-body">
+                        <div class="loading load2">
+                            <div></div>
+                        </div>
+                        <div class="done-img">
+                            <img src="../img/done.png">
+                        </div>
                             <form id="form-edit">
                                 
-                                <h5>Ação / número de papéis que possui</h5>
+                                <div class="editTitle">
+                                    <h5>Ação</h5>
+                                    <h5 class="h5dois">Número de papéis que possui</h5>
+                                </div>
 
                                 <div id="inputs2">
                                 </div>
@@ -275,7 +284,7 @@
 
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="cancelEdit()">Cancelar</button>
                             <button class="btn btn-primary" type="button" onclick="confirmEdit();">Confirmar Edições</button>
                         </div>
 
@@ -353,6 +362,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.3.2/chart.min.js"></script>
     <script>
+        document.getElementsByClassName("loading")[1].style.display = "none"
         document.getElementsByClassName("graph")[0].style.display = "none"
         document.getElementsByClassName("graph2")[0].style.display = "none"
         document.getElementsByClassName("title1")[0].style.display = "none"
@@ -488,6 +498,7 @@
         var toDelete = []
         var toEdit = []
         function editContent() {
+            document.getElementsByClassName("done-img")[0].style.display = "none"
             console.log(numPapeis)
             console.log(codAcoes)
             console.log(bvmfs)
@@ -505,21 +516,56 @@
                     </div>`
             }
 
-            //document.getElementById("inputs2").innerHTML += `<button type="button" class="btn btn-primary">Adicionar Ação</button>`
+            if (document.getElementById("addButton") == null) {
+                document.getElementById("inputs2").outerHTML += `<button type="button" id="addButton" class="btn btn-primary" onclick="adicionarAcao()">Adicionar Ação</button>`
+            }
 
         }
+
+        function cancelEdit() {
+            toDelete = []
+        }
+
+        function adicionarAcao() {
+            if (mani <= 10) {
+                document.getElementById("inputs2").innerHTML += `<div class="input-group mb-3 align-items-start">
+                    <input id="newAct${mani}" type="text" class="form-control col-5" placeholder="Ex: PETR4" aria-label="Username" required>
+                    
+                    <span class="input-group-text">R$</span>
+                    <input type="number" id="newPaper${mani}" class="form-control" aria-label="Amount (to the nearest dollar)" required>
+                    
+                    </div>`
+                mani++
+                validateAction2()
+            } else {
+                alert("limite de 10 ações por vez")
+            }
+        }
+
         function confirmEdit() {
+            //start loading
+            document.getElementById("form-edit").style.display = "none"
+            document.getElementsByClassName("modal-footer")[1].style.display = "none"
+            document.getElementsByClassName("loading")[1].style.display = ""
+
             //remove empty spaces from array
             toDelete = toDelete.filter(Boolean)
 
             //define toEdit values
             for (let i = 0; i < bvmfs.length; i++) {
                 toEdit[i] = []
-                if (document.getElementById(`money${i+1}`).value != numPapeis[i]) {
+                if (document.getElementById(`money${i+1}`).value != sumPapeis[i]) {
                     toEdit[i][i] = document.getElementById(`money${i+1}`).value
                     toEdit[i][(i+1)] = codAcoes[i]
                 }
                     
+            }
+
+            //define newActions
+            if (mani > 1) {
+                for (let i = 1; i < mani; i++) {
+                    newActions[i-1] = document.getElementById(`newAct${i}`).value
+                }
             }
 
             //delete empty spaces from matrix
@@ -554,6 +600,8 @@
             var prices2 = []
             var ids = []
             var j = 0
+            var z = 0
+
             var actions3 = []
             var papeisCut = []
             
@@ -563,7 +611,7 @@
             for (let i = 0; i < bvmfs.length; i++) {
                 if (!pos.includes(i)) {
                     actions3[p] = bvmfs[i]
-                    papeisCut[p] = numPapeis[i]
+                    papeisCut[p] = sumPapeis[i]
                     p++
                 }
             }
@@ -574,13 +622,19 @@
                 if (toDelete.includes(toEdit[i][1])) {
                     actions3.splice((i-p),1)
                     toEdit.splice((i-p),1)
+                    papeisCut.splice((i-p),1)
                     p++
                 }
 
             }
 
+            console.log("papeisCut: ",papeisCut)
+            console.log("numpapeis: ",numPapeis)
+            console.log("sumPapeis: ",sumPapeis)
+
             console.log(actions3)
-            console.log(toEdit)
+            console.log("to edit: ",toEdit)
+            console.log("to delete: ",toDelete)
 
             const db3 = firebase.firestore()
             const cRef = db3.collection("carteira")
@@ -588,9 +642,16 @@
 
             var prices3Copy = []
             var prices3 = []
+            var newPricesCopy = []
+            var newPrices = []
+            var newBvmfs = []
             var ids3 = []
+            var ids4Copy = []
+            var ids4 = []
             var idsToDelete = []
             var q = 0
+
+
 
             async function commitEdits() {
                 //getting fresh ids,prices
@@ -606,6 +667,21 @@
                         j++
                     }
                 }
+
+                //fresh ids, prices of new actions to add
+                if (mani > 1) {
+                    const db = firebase.firestore().collection("actions");
+                    
+                    let allcots2 = await db.where("bvmf","in",newActions).get();
+                    for(const doc of allcots2.docs) {
+                        newBvmfs[z] = doc.data().bvmf
+                        ids4Copy[z] = doc.data().codAcao
+                        newPricesCopy[z] = doc.data().price
+                        
+                        z++
+                    }
+                }
+
                 //getting doc ids to delete
                 if (toDelete.length) {
                     var allcots3 = await cRef.where("usuario","==",email).get();
@@ -629,6 +705,19 @@
                         }
                     }
                 }
+
+                if (mani > 1) {
+                    //sort newPrices
+                    for (let i = 0; i < newActions.length; i++) {
+                        for (let j = 0; j < newActions.length; j++) {
+                            if (newBvmfs[j] === newActions[i]) {
+                                newPrices[i] = newPricesCopy[j]
+                                ids4[i] = ids4Copy[j]
+                            }
+                        }
+                    }
+                }
+
                 console.log("sorted prices3: ")
                 console.log(prices3)
                 
@@ -644,6 +733,18 @@
                     }
                 }
 
+                //newActions batch sets
+                if (mani > 1) {
+                    for (let i = 0; i < newActions.length; i++) {
+                        batch.set(cRef.doc(), {
+                            codAcao: ids4[i],
+                            numPapeis: document.getElementById(`newPaper${i+1}`).value,
+                            usuario: email,
+                            rawCot: newPrices[i]
+                        })
+                    }
+                }
+
                 if (toDelete.length) {
                     //define batch deletes
                     for (let i = 0; i < idsToDelete.length; i++) {
@@ -655,7 +756,18 @@
                 }
 
                 batch.commit().then(() => {
-                    alert("carteira editada com sucesso!")
+                    document.getElementsByClassName("loading")[1].style.display = "none"
+                    document.getElementsByClassName("done-img")[0].style.display = ""
+                    x = setInterval(function(){
+                        if (document.getElementsByClassName("done-img")[0].style.display == "") {
+                            alert("carteira editada com sucesso!")
+                            clearInterval(x)
+                            window.location.reload()
+                        }
+                    },100)
+
+                }).catch((err) => {
+                    alert(err)
                 })
 
             }
@@ -677,10 +789,15 @@
                     }
                 }
             }
-            commitEdits().then(y => {
-                
-                //window.location.reload()
-            })
+
+            console.log(bvmfs)
+            console.log((bvmfs.length)+(newActions.length))
+            if (((bvmfs.length)+(newActions.length)) <= 10) {
+                commitEdits()
+            } else {
+                alert("por enquanto, você não pode ter mais de 10 ações na carteira.")
+                window.location.reload()
+            }
 
         }
         //delete buttons functions
@@ -768,7 +885,493 @@
 
     <script>
         function validateAction() {
-            bootstrapValidate(['#contain1', '#contain2', '#contain3', '#contain4', '#contain5', '#contain6', '#contain7', '#contain8', '#contain9', '#contain10', '#contain11', '#contain12', '#contain13', '#contain14', '#contain15', '#contain16', '#contain17', '#contain18', '#contain19', '#contain20'], 'inArray:(IBOV,\
+            bootstrapValidate(['#contain1', '#contain2', '#contain3', '#contain4', '#contain5', '#contain6', '#contain7', '#contain8', '#contain9', '#contain10', '#contain11', '#contain12', '#contain13', '#contain14', '#contain15', '#contain16', '#contain17', '#contain18', '#contain19', '#contain20', '#newAct1'], 'inArray:(IBOV,\
+            ,ARML3,\
+            ,MLAS3,\
+            ,CBAV3,\
+            ,TTEN3,\
+            ,BRBI11,\
+            ,NINJ3,\
+            ,DOTZ3,\
+            ,MODL4,\
+            ,MODL11,\
+            ,MODL3,\
+            ,KRSA3,\
+            ,CXSE3,\
+            ,GGPS3,\
+            ,MATD3,\
+            ,ALLD3,\
+            ,BLAU3,\
+            ,ATMP3,\
+            ,ASAI3,\
+            ,JSLG3,\
+            ,CMIN3,\
+            ,ELMD3,\
+            ,ORVR3,\
+            ,OPCT3,\
+            ,WEST3,\
+            ,CSED3,\
+            ,BMOB3,\
+            ,JALL3,\
+            ,POWE3,\
+            ,MOSI3,\
+            ,MBLY3,\
+            ,ESPA3,\
+            ,VAMO3,\
+            ,INTB3,\
+            ,CJCT11,\
+            ,BMLC11,\
+            ,RECR11,\
+            ,URPR11,\
+            ,DEVA11,\
+            ,MFAI11,\
+            ,NGRD3,\
+            ,BRK.B,\
+            ,BAX,\
+            ,BKR,\
+            ,T,\
+            ,MO,\
+            ,AIG,\
+            ,ACN,\
+            ,ABT,\
+            ,MMM,\
+            ,PEP,\
+            ,GOOG,\
+            ,AVLL3,\
+            ,RRRP3,\
+            ,AERI3,\
+            ,ENJU3,\
+            ,CASH3,\
+            ,TFCO4,\
+            ,GMAT3,\
+            ,SEQL3,\
+            ,BOAS3,\
+            ,MELK3,\
+            ,HBSA3,\
+            ,CURY3,\
+            ,PLPL3,\
+            ,PETZ3,\
+            ,PGMN3,\
+            ,LAVV3,\
+            ,LJQQ3,\
+            ,DMVF3,\
+            ,SOMA3,\
+            ,AMBP3,\
+            ,ALPK3,\
+            ,MTRE3,\
+            ,MDNE3,\
+            ,BDLL4,\
+            ,BDLL3,\
+            ,UPSS34,\
+            ,LMTB34,\
+            ,JNJB34,\
+            ,FDXB34,\
+            ,EXXO34,\
+            ,CATP34,\
+            ,BMYB34,\
+            ,BOEI34,\
+            ,ARMT34,\
+            ,AXPB34,\
+            ,STBP3,\
+            ,RAPT3,\
+            ,EGIE3,\
+            ,VIIA3,\
+            ,CEDO4,\
+            ,CEDO3,\
+            ,NFLX34,\
+            ,NIKE34,\
+            ,MCDC34,\
+            ,HOME34,\
+            ,FDMO34,\
+            ,CMCS34,\
+            ,AMZO34,\
+            ,RDNI3,\
+            ,SLED3,\
+            ,RSID3,\
+            ,MNDL3,\
+            ,LEVE3,\
+            ,CTKA4,\
+            ,CTKA3,\
+            ,MYPK3,\
+            ,GRND3,\
+            ,LCAM3,\
+            ,CEAB3,\
+            ,LLIS3,\
+            ,CGRA4,\
+            ,CGRA3,\
+            ,ESTR4,\
+            ,ESTR3,\
+            ,DIRR3,\
+            ,CTNM4,\
+            ,CTNM3,\
+            ,ANIM3,\
+            ,EVEN3,\
+            ,AMAR3,\
+            ,MOVI3,\
+            ,JHSF3,\
+            ,HBOR3,\
+            ,PDGR3,\
+            ,EZTC3,\
+            ,HGTX3,\
+            ,ALPA3,\
+            ,ALPA4,\
+            ,RENT3,\
+            ,MRVE3,\
+            ,MGLU3,\
+            ,LREN3,\
+            ,COGN3,\
+            ,WHRL4,\
+            ,WHRL3,\
+            ,TCSA3,\
+            ,SBUB34,\
+            ,SEER3,\
+            ,SLED4,\
+            ,LAME4,\
+            ,LAME3,\
+            ,HOOT4,\
+            ,GFSA3,\
+            ,YDUQ3,\
+            ,CYRE3,\
+            ,CVCB3,\
+            ,WALM34,\
+            ,PEPB34,\
+            ,COLG34,\
+            ,COCA34,\
+            ,SMTO3,\
+            ,MDIA3,\
+            ,CAML3,\
+            ,AGRO3,\
+            ,BEEF3,\
+            ,VIVA3,\
+            ,CRFB3,\
+            ,PCAR3,\
+            ,NTCO3,\
+            ,MRFG3,\
+            ,JBSS3,\
+            ,PGCO34,\
+            ,BRFS3,\
+            ,TRAD3,\
+            ,BK,\
+            ,BAC,\
+            ,BSLI4,\
+            ,BSLI3,\
+            ,WFCO34,\
+            ,VISA34,\
+            ,MSBR34,\
+            ,MSCD34,\
+            ,JPMC34,\
+            ,HONB34,\
+            ,GEOO34,\
+            ,GSGI34,\
+            ,CTGP34,\
+            ,BOAC34,\
+            ,MMMC34,\
+            ,SCAR3,\
+            ,LPSB3,\
+            ,BMGB4,\
+            ,IGBR3,\
+            ,GSHP3,\
+            ,PSSA3,\
+            ,CARD3,\
+            ,BBRK3,\
+            ,BRPR3,\
+            ,BRSR6,\
+            ,BRSR5,\
+            ,BRSR3,\
+            ,BIDI3,\
+            ,BIDI11,\
+            ,BIDI4,\
+            ,SANB4,\
+            ,SANB3,\
+            ,SANB11,\
+            ,MULT3,\
+            ,ITUB4,\
+            ,ITUB3,\
+            ,ALSO3,\
+            ,BMIN3,\
+            ,MERC4,\
+            ,LOGG3,\
+            ,ITSA4,\
+            ,ITSA3,\
+            ,IRBR3,\
+            ,IGTA3,\
+            ,BBDC4,\
+            ,BBDC3,\
+            ,BRML3,\
+            ,APER3,\
+            ,BBSE3,\
+            ,BPAN4,\
+            ,BBAS3,\
+            ,DEXP4,\
+            ,DEXP3,\
+            ,FCXO34,\
+            ,PMAM3,\
+            ,FESA4,\
+            ,FESA3,\
+            ,EUCA4,\
+            ,EUCA3,\
+            ,SUZB3,\
+            ,KLBN4,\
+            ,KLBN3,\
+            ,KLBN11,\
+            ,VALE3,\
+            ,UNIP6,\
+            ,UNIP5,\
+            ,UNIP3,\
+            ,MMXM3,\
+            ,MMXM11,\
+            ,GOAU4,\
+            ,CSNA3,\
+            ,BRKM6,\
+            ,BRKM5,\
+            ,BRKM3,\
+            ,BRAP4,\
+            ,BRAP3,\
+            ,W2ST34,\
+            ,S2QS34,\
+            ,P2AT34,\
+            ,G2DD34,\
+            ,D2AS34,\
+            ,C2PT34,\
+            ,BIVW39,\
+            ,BIVE39,\
+            ,BCWV39,\
+            ,A2VL34,\
+            ,A2MC34,\
+            ,AFHI11,\
+            ,HSRE11,\
+            ,VSEC11,\
+            ,AGXY3,\
+            ,CRPG6,\
+            ,CRPG5,\
+            ,CRPG3,\
+            ,SMFT3,\
+            ,SOJA3,\
+            ,Z2NG34,\
+            ,T2TD34,\
+            ,T2DH34,\
+            ,S2UI34,\
+            ,S2QU34,\
+            ,S2NW34,\
+            ,S2HO34,\
+            ,C2ZR34,\
+            ,U2ST34,\
+            ,S2EA34,\
+            ,P2EN34,\
+            ,M2PW34,\
+            ,K2CG34,\
+            ,D2KN34,\
+            ,C2ON34,\
+            ,C2HD34,\
+            ,B2YN34,\
+            ,ENMT4,\
+            ,ENMT3,\
+            ,AIRB34,\
+            ,PAGS34,\
+            ,HBRE3,\
+            ,XINA11,\
+            ,ADP,\
+            ,OLP,\
+            ,AKBA,\
+            ,DLTH,\
+            ,KBLM,\
+            ,MRAM,\
+            ,DESP,\
+            ,BLCM,\
+            ,CULP,\
+            ,LEVI,\
+            ,HII,\
+            ,ASMB,\
+            ,CABA,\
+            ,TRMB,\
+            ,RBBN,\
+            ,FDBC,\
+            ,PTRS,\
+            ,HUD,\
+            ,OSK,\
+            ,EQ,\
+            ,SEAC,\
+            ,RAND,\
+            ,EMN,\
+            ,KRMD,\
+            ,MHK,\
+            ,APOG,\
+            ,HEC,\
+            ,XENE,\
+            ,GOOGL,\
+            ,LYV,\
+            ,BDTX,\
+            ,WMS,\
+            ,KBR,\
+            ,WHG,\
+            ,HIG,\
+            ,STIM,\
+            ,MX,\
+            ,STFC,\
+            ,VAPO,\
+            ,MTR,\
+            ,C,\
+            ,SCX,\
+            ,EKSO,\
+            ,ASRV,\
+            ,GLAD,\
+            ,HMHC,\
+            ,HQY,\
+            ,LMND,\
+            ,CHKP,\
+            ,VCTR,\
+            ,VEEV,\
+            ,RAIZ4,\
+            ,RECV3,\
+            ,SLBG34,\
+            ,HALI34,\
+            ,COPH34,\
+            ,CHVX34,\
+            ,PRIO3,\
+            ,OSXB3,\
+            ,DMMO3,\
+            ,RPMG3,\
+            ,UGPA3,\
+            ,PETR4,\
+            ,PETR3,\
+            ,BRDT3,\
+            ,ENAT3,\
+            ,ONCO3,\
+            ,VVEO3,\
+            ,PARD3,\
+            ,BIOM3,\
+            ,BALM4,\
+            ,BALM3,\
+            ,PFIZ34,\
+            ,MRCK34,\
+            ,PNVL4,\
+            ,PNVL3,\
+            ,AALR3,\
+            ,ODPV3,\
+            ,RADL3,\
+            ,QUAL3,\
+            ,OFSA3,\
+            ,HYPE3,\
+            ,FLRY3,\
+            ,ABTT34,\
+            ,CLSA3,\
+            ,LVTC3,\
+            ,G2DI33,\
+            ,IFCM3,\
+            ,ADBE,\
+            ,CMCSA,\
+            ,CSCO,\
+            ,INTC,\
+            ,FB,\
+            ,AMZN,\
+            ,AAPL,\
+            ,MSFT,\
+            ,GOGL35,\
+            ,LWSA3,\
+            ,TOTS3,\
+            ,XRXB34,\
+            ,QCOM34,\
+            ,ORCL34,\
+            ,MSFT34,\
+            ,IBMB34,\
+            ,ITLC34,\
+            ,HPQB34,\
+            ,CSCO34,\
+            ,AAPL34,\
+            ,POSI3,\
+            ,EBAY34,\
+            ,BRIT3,\
+            ,FIQE3,\
+            ,VERZ34,\
+            ,OIBR4,\
+            ,OIBR3,\
+            ,TIMS3,\
+            ,VIVT3,\
+            ,TELB4,\
+            ,TELB3,\
+            ,ATTB34,\
+            ,CEPE6,\
+            ,CEPE5,\
+            ,CEPE3,\
+            ,CEED4,\
+            ,CEED3,\
+            ,EEEL4,\
+            ,EEEL3,\
+            ,CASN3,\
+            ,CEGR3,\
+            ,CEBR6,\
+            ,CEBR5,\
+            ,CEBR3,\
+            ,RNEW4,\
+            ,RNEW3,\
+            ,COCE5,\
+            ,COCE3,\
+            ,CLSC4,\
+            ,CLSC3,\
+            ,ALUP4,\
+            ,ALUP3,\
+            ,ALUP11,\
+            ,SAPR4,\
+            ,SAPR3,\
+            ,SAPR11,\
+            ,CPLE6,\
+            ,CPLE5,\
+            ,CPLE3,\
+            ,CPFE3,\
+            ,CGAS5,\
+            ,CGAS3,\
+            ,AESB3,\
+            ,NEOE3,\
+            ,TRPL4,\
+            ,TRPL3,\
+            ,TAEE4,\
+            ,TAEE3,\
+            ,TAEE11,\
+            ,SBSP3,\
+            ,RNEW11,\
+            ,GEPA4,\
+            ,GEPA3,\
+            ,CESP6,\
+            ,CESP5,\
+            ,CESP3,\
+            ,CMIG4,\
+            ,CMIG3,\
+            ,AFLT3,\
+            ,B3SA3,\
+            ,GGBR3,\
+            ,ENGI3,\
+            ,ENGI4,\
+            ,ENGI11,\
+            ,CIEL3,\
+            ,ABEV3,\
+            ,AZUL4,\
+            ,EMBR3,\
+            ,BPAC11,\
+            ,CCRO3,\
+            ,CSAN3,\
+            ,CSMG3,\
+            ,ECOR3,\
+            ,ELET3,\
+            ,ELET6,\
+            ,ENBR3,\
+            ,ENEV3,\
+            ,EQTL3,\
+            ,GGBR4,\
+            ,GNDI3,\
+            ,GOLL4,\
+            ,HAPV3,\
+            ,LIGT3,\
+            ,MEAL3,\
+            ,RAIL3,\
+            ,RAPT4,\
+            ,SULA11,\
+            ,USIM5,\
+            ,WEGE3):ERRO: Símbolo não está no nosso banco de dados.')
+        }
+    </script>
+    <script>
+        function validateAction2() {
+            bootstrapValidate(['#newAct1', '#newAct2', '#newAct3', '#newAct4', '#newAct5', '#newAct6', '#newAct7', '#newAct8', '#newAct9', '#newAct10'], 'inArray:(IBOV,\
             ,ARML3,\
             ,MLAS3,\
             ,CBAV3,\

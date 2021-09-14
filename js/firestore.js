@@ -9,7 +9,9 @@ var bvmfs = []
 var entsCopy = []
 var ents = []
 var cods2 = []
+var newActions = []
 var i = 0
+var mani = 1
 
 var g = 0
 var isCarteira
@@ -19,6 +21,7 @@ var numPapeis = []
 var numPapeisCopy = []
 var codAcoes = []
 var codAcoesCopy = []
+var uniqueCods = []
 var rawCotsCopy = []
 var rawCots = []
 var valuesf = []
@@ -43,8 +46,12 @@ async function verifyCarteira() {
     codAcoes = codAcoesCopy
     rawCots = rawCotsCopy
 
+    let codAcoes2 = codAcoes.filter((c, index) => {
+      return codAcoes.indexOf(c) === index;
+    });
+
     if (!val) {
-      var allcots = await db.where("codAcao","in",codAcoes).get()
+      var allcots = await db.where("codAcao","in",codAcoes2).get()
   
       for(const doc of allcots.docs){
         docData = doc.data()
@@ -80,24 +87,31 @@ async function verifyCarteira() {
                 indexes.push(i);
         return indexes;
       }
-
+      
+      //setting unique elements
       let uniqueChars = bvmfs.filter((c, index) => {
           return bvmfs.indexOf(c) === index;
       });
 
       reps[0] = uniqueChars
 
+      let uniqueEnts = ents.filter((c, index) => {
+        return ents.indexOf(c) === index;
+      });
+
+      uniqueCods = codAcoes.filter((c, index) => {
+        return codAcoes.indexOf(c) === index;
+      });
+
+      //getting reps positions
       for (let i = 0; i < uniqueChars.length; i++) {
         reps[1][i] = getAllIndexes(bvmfs,uniqueChars[i])
       }
 
-      console.log(bvmfs)
-      console.log("reps :")
-      console.log(reps)
-
-      //define valuesf and precos medios
+      //define valuesf, precos medios, percent
       let percent = []
       let precosMedios = []
+      let prices3 = []
       for (let i = 0; i < reps[0].length; i++) {
         let prices2 = []
         let papeis2 = []
@@ -123,6 +137,7 @@ async function verifyCarteira() {
             }
           }
         }
+        prices3[i] = prices2[0]
         precosMedios[i] = parseFloat(((sum)/(papeis2.reduce((acc,num) => parseFloat(acc)+parseFloat(num)))).toFixed(3))
         valuesf[i] = parseFloat(sum1.toFixed(3))
         percent[i] = ((prices2[0]/precosMedios[i])-1)*100
@@ -136,27 +151,29 @@ async function verifyCarteira() {
         
       }
       
+      console.log(bvmfs)
       console.log("preços médios: ",precosMedios)
       console.log("valuesf: ",valuesf)
       console.log("percent: ",percent)
-
+      
       bvmfs = reps[0]
+      codAcoes = uniqueCods
 
       for (let i = 0; i < bvmfs.length; i++) {
 
         divact.innerHTML += `<div class="actions-list">
             <div class="card-text">
               <h2>${bvmfs[i]}</h2>
-              <p><span>Preço: R$${prices[i]}</span></p>
+              <p><span>Preço: R$${prices3[i]}</span></p>
               <p><span>Lucro/perda agora: </span><span class="nb">${percent[i].toFixed(3)}%</span></p>
             </div>
             <div id="bg${i+1}" class="card-stats">
               <div class="stat">
-                <div class="value">R$${prices[i]}</div>
+                <div class="value">R$${prices3[i]}</div>
                 <div class="type">Preço</div>
               </div>
               <div class="stat">
-                <div class="ent">${ents[i]}</div>
+                <div class="ent">${uniqueEnts[i]}</div>
                 <div class="type">Empresa</div>
               </div>
             </div>

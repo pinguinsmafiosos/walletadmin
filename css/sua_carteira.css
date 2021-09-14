@@ -150,6 +150,13 @@ ul {
     background-color: transparent;
     position: absolute;
 }
+.loading.load2 {
+    height: 330px;
+    width: 750px;
+    overflow: hidden;
+    background-color: transparent;
+    position: relative;
+}
 .loading>div {
     height: 100px;
     width: 100px;
@@ -169,6 +176,15 @@ ul {
         transform: rotate(360deg);
     }
 }
+.done-img {
+    height: 300px;
+    width: 245px;
+    margin: 0 auto;
+}
+.done-img img {
+    height: 250px;
+    width: 250px;
+}
 .modal-button {
     width: 400px;
     margin: 0 auto;
@@ -185,6 +201,12 @@ ul {
     width: fit-content;
     top: 8%;
     left: 79%;
+}
+.editTitle {
+    display: flex;
+}
+.h5dois {
+    margin-left: 327px;
 }
 .title1 {
     width: 980px;
