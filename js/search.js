@@ -2,7 +2,6 @@
 const searchWrapper = document.querySelector(".search-input");
 const inputBox = searchWrapper.querySelector("input");
 const autoBox = searchWrapper.querySelector(".autocom-box");
-console.log(autoBox);
 
 //press and release any key and add eventListener for 'return' key
 inputBox.onkeyup = (e)=>{

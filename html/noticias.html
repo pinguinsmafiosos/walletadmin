@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/cotacoes.css">
-    <title>Cotações</title>
+    <link rel="stylesheet" href="../css/noticias.css">
+    <title>Notícias</title>
 </head>
 
 <body>
@@ -49,60 +49,10 @@
             </div>
         </div>
     </main>
+    <!-- ----- menu padrão até aqui ----- -->
 
-    <!-- menu padrão até aqui -->
+    <div class="noticias">
 
-    <div class="tradingview-widget2" id="widget2">
-        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-            loadCotacoes();
-
-            function loadCotacoes() {
-                new TradingView.widget({
-                    "symbols": [{
-                            "proName": "FOREXCOM:SPXUSD",
-                            "title": "S&P 500"
-                        },
-                        {
-                            "proName": "FOREXCOM:NSXUSD",
-                            "title": "Nasdaq 1000"
-                        },
-                        {
-                            "proName": "FX_IDC:EURUSD",
-                            "title": "EUR/USD"
-                        },
-                        {
-                            "proName": "BITSTAMP:BTCUSD",
-                            "title": "BTC/USD"
-                        },
-                        {
-                            "proName": "BITSTAMP:ETHUSD",
-                            "title": "ETH/USD"
-                        }
-                    ],
-                    "showSymbolLogo": true,
-                    "colorTheme": "light",
-                    "isTransparent": false,
-                    "displayMode": "adaptive",
-                    "locale": "br",
-                    "container_id": "widget2"
-                })
-            };
-        </script>
-    </div>
-
-
-    <div class="search-box">
-        <h2>Pesquise por uma ação: </h2>
-        <div class="wrapper">
-            <div class="search-input">
-                <input type="text" placeholder="digite aqui o nome do ativo..">
-                <div class="autocom-box"></div>
-                <div class="icon"><i class="fas fa-search"></i></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="action-div">
     </div>
 
     <!-- core Firebase -->
@@ -124,14 +74,54 @@
 
     <script src="../js/page_auth.js"></script>
     <script src="../js/logout.js"></script>
-    
-    
-    <script src="../js/autocomp.js"></script>
-    <script src="../js/search.js"></script>
-    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
 
-    <script src="../js/stockData.js"></script>
+    <script type="text/javascript">
+        function validar() {
+            var aux = 'EIOWAH'
+            if (aux === undefined || aux == null || aux.length < 5) {
+                console.log(error)
+            } else {
+                url = `https://finnhub.io/api/v1/news?category=finance&token=c50uv22ad3if5950l4tg`
+                requestData(url)
+            }
 
+        }
+
+        async function requestData(url) {
+            const options = {
+                method: 'GET',
+                mode: 'cors',
+                cache: 'default'
+            }
+
+            await fetch(url, options)
+                .then(response => {
+                    response.json()
+                    .then(data => showData(data))
+                }).catch(e => console.log(e.message))
+        }
+
+        function showData(data) {
+            console.log(data);
+
+            document.getElementsByClassName("noticias")[0].innerHTML = ""
+
+            document.getElementsByClassName("noticias")[0].innerHTML = `<div class="news-box primary">
+                <a href="${data["0"].url}"><img src="${data["0"].image}" /></a>
+                <a class="aText" href="${data["0"].url}">${data["0"].headline}</a>`
+
+            for (let i = 1; i < 7; i++) {
+                document.getElementsByClassName("noticias")[0].innerHTML += `<div class="news-box">
+                <a href="${data[`${i}`].url}"><img src="${data[`${i}`].image}" /></a>
+                <a class="a2Text" href="${data[`${i}`].url}">${data[`${i}`].headline}</a>
+                </div>`
+                
+            }
+
+        }
+
+        validar()
+    </script>
 </body>
 
 </html>

@@ -155,6 +155,8 @@ async function verifyCarteira() {
       console.log("preços médios: ",precosMedios)
       console.log("valuesf: ",valuesf)
       console.log("percent: ",percent)
+
+      console.log(sumPapeis)
       
       bvmfs = reps[0]
       codAcoes = uniqueCods
@@ -165,6 +167,7 @@ async function verifyCarteira() {
             <div class="card-text">
               <h2>${bvmfs[i]}</h2>
               <p><span>Preço: R$${prices3[i]}</span></p>
+              <p><span>Ações compradas: ${sumPapeis[i]}</span></p>
               <p><span>Lucro/perda agora: </span><span class="nb">${percent[i].toFixed(3)}%</span></p>
             </div>
             <div id="bg${i+1}" class="card-stats">
