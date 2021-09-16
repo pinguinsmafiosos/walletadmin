@@ -81,7 +81,7 @@
             if (aux === undefined || aux == null || aux.length < 5) {
                 console.log(error)
             } else {
-                url = `https://finnhub.io/api/v1/news?category=finance&token=c50uv22ad3if5950l4tg`
+                url = `https://finnhub.io/api/v1/company-news?symbol=BTC&from=2021-03-01&to=2021-03-09&token=c50uv22ad3if5950l4tg`
                 requestData(url)
             }
 
@@ -108,7 +108,8 @@
 
             document.getElementsByClassName("noticias")[0].innerHTML = `<div class="news-box primary">
                 <a href="${data["0"].url}"><img src="${data["0"].image}" /></a>
-                <a class="aText" href="${data["0"].url}">${data["0"].headline}</a>`
+                <div class="aTextDiv"><a class="aText" href="${data["0"].url}">${data["0"].headline}</a>
+                <p>${data["0"].summary}</p></div>`
 
             for (let i = 1; i < 7; i++) {
                 document.getElementsByClassName("noticias")[0].innerHTML += `<div class="news-box">

@@ -6,9 +6,10 @@ body {
     width: 100%;
     height: 100%;
     margin: 0 auto;
-    background-image: url("https://images.unsplash.com/photo-1579546929518-9e396f3cc809?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1100&q=80");
+    background-color: #007eff30;
+    /* background-image: url("https://images.unsplash.com/photo-1579546929518-9e396f3cc809?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1100&q=80");
     background-repeat: no-repeat;
-    background-size: cover;
+    background-size: cover; */
 }
 ul {
     padding: 0px!important;
@@ -128,7 +129,7 @@ ul {
     height: 300px;
     margin: 40px 15px 20px 15px;
     overflow: hidden;
-    border: solid 1px #ffffff85;
+    border: solid 1px #ffffff;
     border-radius: 25px;
 }
 .news-box.primary {
@@ -143,9 +144,13 @@ ul {
     margin-left: 15px;
     border-radius: 20px;
 }
+.aTextDiv {
+    width: 485px;
+    padding-left: 15px;
+    text-align: justify;
+}
 .aText {
     font-size: 26px;
-    padding-left: 20px;
 }
 .news-box a {
     color: black;
