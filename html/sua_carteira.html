@@ -41,7 +41,7 @@
                     <li><a href="index.html">Boas-Vindas</a></li>
                     <li><a href="sua_carteira.html">Sua Carteira</a></li>
                     <li><a href="cotacoes.html">Cotações</a></li>
-                    <li><a href="">Histórico</a></li>
+                    <li><a href="historico.html">Histórico</a></li>
                     <li><a href="noticias.html">Notícias</a></li>
                 </ul>
             </div>
@@ -290,11 +290,9 @@
             </div>
         </div>
 
-        <div class="graph">
-            <canvas class="line-chart">
-
-            </canvas>
+        <div class="totPatrimonio">
         </div>
+
         </div>
         <div class="col-100">
             <div class="graph2">
@@ -350,7 +348,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.3.2/chart.min.js"></script>
     <script>
         document.getElementsByClassName("loading")[1].style.display = "none"
-        document.getElementsByClassName("graph")[0].style.display = "none"
+        document.getElementsByClassName("totPatrimonio")[0].style.display = "none"
         document.getElementsByClassName("graph2")[0].style.display = "none"
         document.getElementsByClassName("title1")[0].style.display = "none"
         document.getElementsByClassName("edit")[0].style.display = "none"
@@ -364,7 +362,7 @@
                 document.getElementById("body").style.background = "#007eff30"
                 document.getElementsByClassName("modal-button")[0].style.display = "none"
                 
-                document.getElementsByClassName("graph")[0].style.display = ""
+                document.getElementsByClassName("totPatrimonio")[0].style.display = ""
                 document.getElementsByClassName("graph2")[0].style.display = ""
                 document.getElementsByClassName("title1")[0].style.display = ""
                 document.getElementsByClassName("edit")[0].style.display = ""
@@ -375,32 +373,11 @@
                 console.log(totalPatrimonio)
 
 
-                var ctx = document.getElementsByClassName("line-chart");
+                //total de patrimonio
+                document.getElementsByClassName("totPatrimonio")[0].innerHTML = `<h2>Total de patrimônio investido:</h2>
+                <h2>R$${totalPatrimonio}</h2>`
         
-                //type, data ou options
-                var chartGraph = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                        datasets: [{
-                            label: `Variação Patrimonial - ${new Date().getFullYear()}`,
-                            data: [totalPatrimonio],
-                            borderWidth: 6,
-                            borderColor: ['rgba(77,166,253,0.85)'],
-                            backgroundColor: 'transparent',
-                            tension: 0.5
-                        }]
-                    },
-                    options: {
-                        plugins: {
-                            title: {
-                                display: true,
-                                text: 'Relatório mensal (R$)'
-                            }
-                        }
-                    }
-                });
-
+                //doughnut chart
                 var ctx2 = document.getElementsByClassName("doughnut-chart");
                 var doughnutGraph = new Chart(ctx2, {
                     type: 'doughnut',
@@ -630,6 +607,7 @@
 
             const db3 = firebase.firestore()
             const cRef = db3.collection("carteira")
+            const logRef = db3.collection("logs")
             const batch = db3.batch()
 
             var prices3Copy = []
@@ -725,6 +703,20 @@
                     }
                 }
 
+                //define log edit batch sets
+                if (actions3.length) {
+                    for (let i = 0; i < actions3.length; i++) {
+                        batch.set(logRef.doc(), {
+                            codAcao: toEdit[i][1],
+                            numPapeis: toEdit[i][0] - papeisCut[i],
+                            usuario: email,
+                            rawCot: prices3[i],
+                            type: "E",
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                        })                        
+                    }
+                }
+
                 //newActions batch sets
                 if (mani > 1) {
                     for (let i = 0; i < newActions.length; i++) {
@@ -737,6 +729,20 @@
                     }
                 }
 
+                //define newActions logs batch sets
+                if (mani > 1) {
+                    for (let i = 0; i < newActions.length; i++) {
+                        batch.set(logRef.doc(), {
+                            codAcao: ids4[i],
+                            numPapeis: document.getElementById(`newPaper${i+1}`).value,
+                            usuario: email,
+                            rawCot: newPrices[i],
+                            type: "A",
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                        })
+                    }
+                }
+
                 if (toDelete.length) {
                     //define batch deletes
                     for (let i = 0; i < idsToDelete.length; i++) {
@@ -744,6 +750,18 @@
                         console.log("delRefs")
                         console.log(delRef)
                         batch.delete(delRef)
+                    }
+                }
+
+                //define logs batch deletes
+                if (toDelete.length) {
+                    for (let i = 0; i < toDelete.length; i++) {
+                        batch.set(logRef.doc(), {
+                            codAcao: toDelete[i],
+                            usuario: email,
+                            type: "D",
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                        })                        
                     }
                 }
 

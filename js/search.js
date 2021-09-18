@@ -2,6 +2,7 @@
 const searchWrapper = document.querySelector(".search-input");
 const inputBox = searchWrapper.querySelector("input");
 const autoBox = searchWrapper.querySelector(".autocom-box");
+let k = 0
 
 //press and release any key and add eventListener for 'return' key
 inputBox.onkeyup = (e)=>{
@@ -10,7 +11,12 @@ inputBox.onkeyup = (e)=>{
     if(userData) {
         inputBox.addEventListener("keyup",function(event) {
             if (event.keyCode === 13) {
-                window.location.href = "https://www.tradingview.com/symbols/BMFBOVESPA-"+inputBox.value+"/?utm_source=www.tradingview.com&utm_medium=widget&utm_campaign=chart&utm_term=BMFBOVESPA:"+inputBox.value;
+                if (k == 0) {
+                    document.getElementsByClassName("action-div")[0].style.display = ""
+                    validar2()
+                    validar()
+                }
+                k++
             }
         });
         emptyArray = autocomp.filter((data)=>{
@@ -21,6 +27,7 @@ inputBox.onkeyup = (e)=>{
             return data = '<li>'+ data +'</li>';
         });
         console.log(emptyArray);
+        k = 0
         searchWrapper.classList.add("active"); //show autocomplete
         showSuggestions(emptyArray);
         let allList = autoBox.querySelectorAll("li")
@@ -37,7 +44,10 @@ function select(element) {
     let selectUserData = element.textContent;
     inputBox.value = selectUserData; //selected item to textfield
     searchWrapper.classList.remove("active"); //hide autocomplete
-    window.location.href = "https://www.tradingview.com/symbols/BMFBOVESPA-"+element.textContent+"/?utm_source=www.tradingview.com&utm_medium=widget&utm_campaign=chart&utm_term=BMFBOVESPA:"+element.textContent;
+    let act_name = inputBox.value
+    document.getElementsByClassName("action-div")[0].style.display = ""
+    validar2()
+    validar()
 }
 
 function showSuggestions(list) {

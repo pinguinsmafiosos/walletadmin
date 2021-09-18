@@ -41,9 +41,10 @@ ul {
     color: white;
     position: absolute;
     right: 50px;
+    top: 1.2%;
 }
-.logout h3 a {
-    color: #ff4040e0;
+.logout button {
+    font-size: 18px;
 }
 .header-main {
     margin: 0 auto;
@@ -64,6 +65,7 @@ ul {
 .redes-sociais {
     width: 25%;
     float: right;
+    margin-top: 14px;
 }
 .header-2 {
     background-color: #ffffff;
@@ -96,7 +98,8 @@ ul {
 .menu {
     width: 70%;
     float: left;
-    height: 55px;
+    height: 33px;
+    margin-top: 10px;
 }
 .busca {
     text-align: center;
@@ -117,6 +120,7 @@ ul {
     width: 980px;
     margin: 0 auto;
     font-family: Poppins, sans-serif;
+    margin-top: 15px;
 }
 .search-box h2 {
     text-align: center;
@@ -180,4 +184,24 @@ ul {
 }
 .autocom-box li:hover {
     background: #efefef;
+}
+/* searchbox end */
+.action-div {
+    margin: 0 auto;
+    display: flex;
+    width: 1200px;
+    flex-wrap: wrap;
+}
+#chart_div {
+    width: 1600px;
+    margin: 0 auto;
+}
+.company-info {
+    height: fit-content;
+    width: 400px;
+    text-align: center;
+}
+#avg-info {
+    height: 400px;
+    width: 450px;
 }

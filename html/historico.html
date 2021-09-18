@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/historico.css">
+    <title>Histórico</title>
+</head>
+<body>
+    <header class="menu-principal">
+        <div class="session">
+            <span> Olá, </span>
+        </div>
+        <div class="logout">
+            <h3><button onclick="logout()">Sair</button></h3>
+        </div>
+        <div class="header-main">
+            <div class="header-1">
+                <div class="logo">
+                    <img src="../img/WalletAdmin logo.png" />
+                </div>
+                <div class="redes-sociais">
+                    <ul>
+                        <li><a href=""><img src="../img/rss logo.png" /></a></li>
+                        <li><a href=""><img src="../img/fb logo.png" /></a></li>
+                        <li><a href=""><img src="../img/twitter logo.png" /></a></li>
+                        <li><a href=""><img src="../img/linkedin logo.png" /></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main class="col-100 menu-urls">
+        <div class="header-2">
+            <div class="menu">
+                <ul>
+                    <li><a href="index.html">Boas-Vindas</a></li>
+                    <li><a href="sua_carteira.html">Sua Carteira</a></li>
+                    <li><a href="cotacoes.html">Cotações</a></li>
+                    <li><a href="historico.html">Histórico</a></li>
+                    <li><a href="noticias.html">Notícias</a></li>
+                </ul>
+            </div>
+            <div class="busca">
+                <input placeholder="Search Something" type="text" />
+            </div>
+        </div>
+    </main>
+    <!-- ----- menu padrão até aqui ----- -->
+
+    <h2>Seus últimos movimentos</h2>
+    <div class="moves">
+
+    </div>
+
+    <!-- core Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-auth.js"></script>
+
+    <script>
+        // Firebase configuration and initialize
+        firebase.initializeApp({
+            apiKey: "AIzaSyD8GUnpkARy2q-WqOXuRF6kM52tOerGzpw",
+            authDomain: "walletadmin-5f07b.firebaseapp.com",
+            projectId: "walletadmin-5f07b",
+            storageBucket: "walletadmin-5f07b.appspot.com",
+            messagingSenderId: "1071595045930",
+            appId: "1:1071595045930:web:34752afad3c1bc0fd56f53"
+        });
+    </script>
+
+    <script src="../js/page_auth.js"></script>
+    <script src="../js/logout.js"></script>
+
+    <script type="text/javascript">
+        const db = firebase.firestore()
+
+        let codAcoes = []
+        let numPapeis = []
+        rawCots = []
+        let types = []
+        let j = 0
+
+        let bvmfsCopy = []
+        let bvmfs = []
+        let cods2 = []
+        let i = 0
+        
+
+        async function getLogs() {
+            await db.collection("logs").where("usuario", "==", email).orderBy("timestamp","desc") .limit(5).get()
+                .then((querySnapshot) => {
+                    isCarteira = querySnapshot.empty
+                    querySnapshot.forEach((doc) => {
+                        console.log(doc.data())
+                        codAcoes[j] = doc.data().codAcao
+                        numPapeis[j] = doc.data().numPapeis
+                        rawCots[j] = doc.data().rawCot
+                        types[j] = doc.data().type
+
+                        j++
+                    })
+                })
+
+                val = isCarteira
+
+                if (!val) {
+                    var allcots = await db.collection("actions").where("codAcao","in",codAcoes).get()
+                
+                    for(const doc of allcots.docs){
+                        docData = doc.data()
+                        bvmfsCopy[i] = docData.bvmf
+                        cods2[i] = docData.codAcao
+                        i++
+                    }
+                }
+
+                //sort bvmfs
+                for (let i = 0; i < codAcoes.length; i++) {
+                    for (let j = 0; j < codAcoes.length; j++) {
+                        if (cods2[j] === codAcoes[i]) {
+                            bvmfs[i] = bvmfsCopy[j]
+                        }
+                    }
+                }
+
+                //reset div content
+                document.getElementsByClassName("moves")[0].innerHTML = ""
+
+                //show logs div
+                if (!codAcoes.length) {
+                    document.getElementsByClassName("moves")[0].innerHTML += `<div class="moves-box">
+                                <p>
+                                    <span>Sem movimentos ainda...</span>
+                                </p>
+                            </div>`
+                } else {
+                    for (let i = 0; i < codAcoes.length; i++) {
+                        if (types[i] == "A") {
+                            document.getElementsByClassName("moves")[0].innerHTML += `<div class="moves-box">
+                                    <p>
+                                        <h2>${bvmfs[i]}</h2>
+                                        <span>Adicionou na carteira com ${Math.abs(numPapeis[i])} ações compradas</span>
+                                    </p>
+                                </div>`
+                            document.getElementsByClassName("moves-box")[i].style.background = "#00d80085"
+                        } else if (types[i] == "E") {
+                            if (numPapeis[i] > 0) {
+                                document.getElementsByClassName("moves")[0].innerHTML += `<div class="moves-box">
+                                        <p>
+                                            <h2>${bvmfs[i]}</h2>
+                                            <span>Comprou ${Math.abs(numPapeis[i])} ações</span>
+                                        </p>
+                                    </div>`
+                                    document.getElementsByClassName("moves-box")[i].style.background = "#00d80085"
+                            } else {
+                                document.getElementsByClassName("moves")[0].innerHTML += `<div class="moves-box">
+                                        <p>
+                                            <h2>${bvmfs[i]}</h2>
+                                            <span>Vendeu ${Math.abs(numPapeis[i])} ações</span>
+                                        </p>
+                                    </div>`
+                                    document.getElementsByClassName("moves-box")[i].style.background = "rgb(216 0 0 / 52%)"
+                            }
+    
+                        } else {
+                            document.getElementsByClassName("moves")[0].innerHTML += `<div class="moves-box">
+                                        <p>
+                                            <h2>${bvmfs[i]}</h2>
+                                            <span>Foi deletada da carteira</span>
+                                        </p>
+                                    </div>`
+                                    document.getElementsByClassName("moves-box")[i].style.background = "rgb(216 0 0 / 52%)"
+                        }
+                    }
+                }
+        }
+
+        getLogs()
+
+    </script>
+
+</body>
+</html>

@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="../css/cotacoes.css">
     <title>Cotações</title>
 </head>
@@ -40,7 +41,7 @@
                     <li><a href="index.html">Boas-Vindas</a></li>
                     <li><a href="sua_carteira.html">Sua Carteira</a></li>
                     <li><a href="cotacoes.html">Cotações</a></li>
-                    <li><a href="">Histórico</a></li>
+                    <li><a href="historico.html">Histórico</a></li>
                     <li><a href="noticias.html">Notícias</a></li>
                 </ul>
             </div>
@@ -103,7 +104,11 @@
     </div>
 
     <div class="action-div">
+        <div class="company-info"></div>
+        <div id="avg-info"></div>
     </div>
+    
+    <div id="chart_div" style="height: 500px;"></div>
 
     <!-- core Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
@@ -122,6 +127,8 @@
         });
     </script>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+
     <script src="../js/page_auth.js"></script>
     <script src="../js/logout.js"></script>
     
@@ -130,6 +137,8 @@
     <script src="../js/search.js"></script>
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
 
+    
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="../js/stockData.js"></script>
 
 </body>

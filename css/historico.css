@@ -1,18 +1,16 @@
 @font-face {
-    font-family: 'Aero';
-    src: url("../fonts/Aero.ttf");
+    font-family: 'Poppins';
+    src: url(../fonts/Poppins-Regular.ttf);
 }
 body {
     width: 100%;
     height: 100%;
     margin: 0 auto;
     background-color: #007eff30;
-    /* background-image: url("https://images.unsplash.com/photo-1579546929518-9e396f3cc809?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1100&q=80");
-    background-repeat: no-repeat;
-    background-size: cover; */
 }
 ul {
     padding: 0px!important;
+    margin-top: 11px;
 }
 .menu-principal {
     width: 100%;
@@ -65,9 +63,9 @@ ul {
 .redes-sociais {
     width: 25%;
     float: right;
+    margin-top: 4px;
 }
 .header-2 {
-    background-color: #ffffff;
     width: 980px;
     margin: 0 auto;
     padding: 16px;
@@ -115,56 +113,36 @@ ul {
     margin-top: 3px;
     border: 1px solid #d6d6d6;
 }
-/* menu padrao até aqui */
-.noticias {
-    width: 1200px;
+/* menu padrão até aqui */
+h2 {
+    text-align: center;
+    font-family: Poppins,sans-serif;
+}
+.moves {
+    width: 980px;
     margin: 0 auto;
+    padding: 10px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 3px -1px 12px 0px rgba(0, 0, 0, 0.9);
+}
+.moves-box {
     display: flex;
-    flex-wrap: wrap;
-    background: #bdd0d438;
-    justify-content: space-between;
+    width: 920px;
+    padding: 10px;
+    margin: 10px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 3px -1px 12px 0px rgba(0, 0, 0, 0.9);
+    text-align: center;
 }
-.news-box {
-    width: 320px;
-    height: 300px;
-    margin: 40px 15px 20px 15px;
-    overflow: hidden;
-    border: solid 1px #ffffff;
-    border-radius: 25px;
+.moves-box h2 {
+    margin: 0px 0px 40px 0px;
+    text-align: left;
 }
-.news-box.primary {
-    width: 1200px;
-    height: 320px;
-    display: flex;
-    padding: 30px 0px 30px 0px;
-}
-.news-box.primary img {
-    width: 640px;
-    height: 320px;
-    margin-left: 15px;
-    border-radius: 20px;
-}
-.aTextDiv {
-    width: 485px;
-    padding-left: 15px;
-    text-align: justify;
-}
-.aText {
-    font-size: 26px;
-}
-.news-box a {
-    color: black;
-    text-decoration: none;
-    
-}
-.a2Text {
-    font-size: 18px;
-}
-.news-box a:hover {
-    text-decoration: underline;
-    cursor: pointer;
-}
-.news-box img {
-    width: 320px;
-    height: 160px;
+.moves-box span {
+    width: 800px;
+    font-family: Poppins,sans-serif;
+    font-size: 19px;
+    align-self: center;
 }

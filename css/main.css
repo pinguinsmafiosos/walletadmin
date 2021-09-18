@@ -39,8 +39,8 @@ ul {
     position: absolute;
     right: 50px;
 }
-.logout h3 a {
-    color: #ff4040e0;
+.logout button {
+    font-size: 18px;
 }
 .header-main {
     margin: 0 auto;

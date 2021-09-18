@@ -42,8 +42,8 @@ ul {
     right: 50px;
     margin-top: 12px;
 }
-.logout h3 a {
-    color: #ff4040e0;
+.logout button {
+    font-size: 18px;
 }
 .header-main {
     margin: 0 auto;
@@ -114,13 +114,16 @@ ul {
     margin-top: 3px;
     border: 1px solid #d6d6d6;
 }
-.graph {
-    width: 980px;
+.totPatrimonio {
+    width: 780px;
     margin: 0 auto;
+    margin-top: 20px;
+    font-family: Poppins,sans-serif;
     padding: 10px;
     background-color: white;
     border-radius: 10px;
     box-shadow: 3px -1px 12px 0px rgba(0, 0, 0, 0.9);
+    text-align: center;
 }
 .graph2 {
     width: 520px;
