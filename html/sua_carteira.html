@@ -21,14 +21,14 @@
         <div class="header-main">
             <div class="header-1">
                 <div class="logo">
-                    <img src="../img/WalletAdmin logo.png" />
+                    <img src="../img/WalletAdmin-logo.png" />
                 </div>
                 <div class="redes-sociais">
                     <ul>
-                        <li><a href=""><img src="../img/rss logo.png" /></a></li>
-                        <li><a href=""><img src="../img/fb logo.png" /></a></li>
-                        <li><a href=""><img src="../img/twitter logo.png" /></a></li>
-                        <li><a href=""><img src="../img/linkedin logo.png" /></a></li>
+                        <li><a href=""><img src="../img/rss-logo.png" /></a></li>
+                        <li><a href=""><img src="../img/fb-logo.png" /></a></li>
+                        <li><a href=""><img src="../img/twitter-logo.png" /></a></li>
+                        <li><a href=""><img src="../img/linkedin-logo.png" /></a></li>
                     </ul>
                 </div>
             </div>
@@ -375,7 +375,7 @@
 
                 //total de patrimonio
                 document.getElementsByClassName("totPatrimonio")[0].innerHTML = `<h2>Total de patrimônio investido:</h2>
-                <h2>R$${totalPatrimonio}</h2>`
+                <h2>R$${totalPatrimonio.toFixed(3)}</h2>`
         
                 //doughnut chart
                 var ctx2 = document.getElementsByClassName("doughnut-chart");

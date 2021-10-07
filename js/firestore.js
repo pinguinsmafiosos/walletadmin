@@ -151,13 +151,6 @@ async function verifyCarteira() {
         
       }
       
-      console.log(bvmfs)
-      console.log("preços médios: ",precosMedios)
-      console.log("valuesf: ",valuesf)
-      console.log("percent: ",percent)
-
-      console.log(sumPapeis)
-      
       bvmfs = reps[0]
       codAcoes = uniqueCods
 
